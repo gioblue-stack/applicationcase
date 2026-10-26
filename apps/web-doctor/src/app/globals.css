@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* MVP — только светлая тема: цвета флагов и графиков подобраны под белый фон. */
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}

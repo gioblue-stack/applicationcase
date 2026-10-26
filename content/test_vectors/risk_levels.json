@@ -1,0 +1,41 @@
+{
+  "description": "Общие кейсы уровня реагирования уточняющего блока (§4.6, §7.1, решения В1–В3). Прогоняются в Python (backend) и TS (mobile). Отсутствующий ключ ответа = вопрос не отвечен.",
+  "cases": [
+    {"name": "только пассивные мысли", "answers": {"q1": true, "q2": false, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "yellow", "final": "yellow", "escalated": false, "flag_level": "yellow", "flag_reason": "risk_block_yellow", "screen": "yellow", "push": "normal"}},
+    {"name": "В1: все ответы «нет» при q9 > 0 — жёлтый, сигнал не теряем", "answers": {"q1": false, "q2": false, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "yellow", "final": "yellow", "escalated": false, "flag_level": "yellow", "flag_reason": "risk_block_yellow", "screen": "yellow", "push": "normal"}},
+    {"name": "активные мысли без способа, намерения и плана", "answers": {"q1": true, "q2": true, "q3": false, "q4": false, "q5": false, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "red", "final": "red", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_red", "screen": "red", "push": "urgent"}},
+    {"name": "активные мысли и способ, без намерения и плана — красный", "answers": {"q1": true, "q2": true, "q3": true, "q4": false, "q5": false, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "red", "final": "red", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_red", "screen": "red", "push": "urgent"}},
+    {"name": "намерение", "answers": {"q1": true, "q2": true, "q3": false, "q4": true, "q5": false, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "emergency", "final": "emergency", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}},
+    {"name": "план", "answers": {"q1": false, "q2": true, "q3": true, "q4": false, "q5": true, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "emergency", "final": "emergency", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}},
+    {"name": "подготовка или попытка за 3 месяца без активных мыслей сейчас", "answers": {"q1": false, "q2": false, "q6": true}, "risk_factors": false,
+     "expected": {"outcome": "answered", "base": "emergency", "final": "emergency", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}},
+    {"name": "«Не сейчас» — красный", "answers": {}, "risk_factors": false,
+     "expected": {"outcome": "dismissed", "base": "red", "final": "red", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_dismissed", "screen": "dismissed", "push": "urgent"}},
+    {"name": "В2: «Не сейчас» при факторах риска — экстренный", "answers": {}, "risk_factors": true,
+     "expected": {"outcome": "dismissed", "base": "red", "final": "emergency", "escalated": true, "flag_level": "red", "flag_reason": "risk_block_dismissed", "screen": "dismissed", "push": "immediate"}},
+    {"name": "В3: ответ только на q1 и закрыт — не ниже красного", "answers": {"q1": true}, "risk_factors": false,
+     "expected": {"outcome": "partial", "base": "red", "final": "red", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_red", "screen": "red", "push": "urgent"}},
+    {"name": "В3: частично, но уже есть намерение — экстренный", "answers": {"q1": true, "q2": true, "q3": true, "q4": true}, "risk_factors": false,
+     "expected": {"outcome": "partial", "base": "emergency", "final": "emergency", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}},
+    {"name": "В3: q2 «да», уточняющие q3–q5 не отвечены", "answers": {"q1": true, "q2": true, "q6": false}, "risk_factors": false,
+     "expected": {"outcome": "partial", "base": "red", "final": "red", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_red", "screen": "red", "push": "urgent"}},
+    {"name": "факторы риска: жёлтый → красный", "answers": {"q1": true, "q2": false, "q6": false}, "risk_factors": true,
+     "expected": {"outcome": "answered", "base": "yellow", "final": "red", "escalated": true, "flag_level": "red", "flag_reason": "risk_block_red", "screen": "red", "push": "urgent"}},
+    {"name": "факторы риска: красный → экстренный", "answers": {"q1": true, "q2": true, "q3": false, "q4": false, "q5": false, "q6": false}, "risk_factors": true,
+     "expected": {"outcome": "answered", "base": "red", "final": "emergency", "escalated": true, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}},
+    {"name": "факторы риска: экстренный остаётся экстренным (потолок)", "answers": {"q1": true, "q2": true, "q3": true, "q4": true, "q5": true, "q6": true}, "risk_factors": true,
+     "expected": {"outcome": "answered", "base": "emergency", "final": "emergency", "escalated": false, "flag_level": "red", "flag_reason": "risk_block_emergency", "screen": "emergency", "push": "immediate"}}
+  ],
+  "invalid": [
+    {"name": "q3 отвечен при q2 «нет»", "answers": {"q1": true, "q2": false, "q3": true, "q6": false}},
+    {"name": "q4 отвечен без ответа на q2", "answers": {"q1": true, "q4": false}},
+    {"name": "неизвестный вопрос", "answers": {"q7": true}},
+    {"name": "ответ не булев", "answers": {"q1": 1}}
+  ]
+}

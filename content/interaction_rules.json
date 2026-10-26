@@ -1,0 +1,39 @@
+{
+  "source": "Положение §7.8 — правила взаимодействий для демо-базы. Сочетание, которого нет в базе: «Данных о сочетании нет» + вопрос врачу; ассистент никогда не пишет «можно».",
+  "approval": {"status": "draft", "approved_by": null, "approved_at": null,
+               "note": "Перед пилотом каждая запись сверяется с ГРЛС двумя врачами независимо"},
+  "unknown_text": "Данных о сочетании нет",
+  "substances": [
+    {"id": "maoi", "name": "Ингибиторы МАО (другая группа антидепрессантов)", "classes": ["maoi"], "category": "drug"},
+    {"id": "ciprofloxacin", "name": "Ципрофлоксацин (антибиотик)", "classes": ["ciprofloxacin"], "category": "drug"},
+    {"id": "tramadol", "name": "Трамадол", "classes": ["tramadol", "opioid"], "category": "drug"},
+    {"id": "triptans", "name": "Триптаны (от мигрени)", "classes": ["triptan"], "category": "drug"},
+    {"id": "opioid_painkillers", "name": "Опиоидные обезболивающие", "classes": ["opioid"], "category": "drug"},
+    {"id": "warfarin", "name": "Варфарин", "classes": ["anticoagulant"], "category": "drug"},
+    {"id": "aspirin", "name": "Аспирин", "classes": ["antiplatelet"], "category": "otc"},
+    {"id": "nsaids", "name": "Противовоспалительные обезболивающие", "classes": ["nsaid"], "category": "otc"},
+    {"id": "st_johns_wort", "name": "Препараты зверобоя", "classes": ["st_johns_wort"], "category": "supplement"},
+    {"id": "alcohol", "name": "Алкоголь", "classes": ["alcohol"], "category": "alcohol"}
+  ],
+  "rules": [
+    {"id": "antidepressant_maoi", "a": {"classes": ["antidepressant"]}, "b": {"classes": ["maoi"]},
+     "severity": "red", "risk": "Серотониновый синдром; сочетание противопоказано",
+     "patient_text": "Не принимайте вместе", "ask_doctor": true},
+    {"id": "agomelatine_duloxetine_cyp1a2", "a": {"substances": ["agomelatine", "duloxetine"]},
+     "b": {"substances": ["fluvoxamine", "ciprofloxacin"]},
+     "severity": "red", "risk": "Концентрация препарата резко растёт; сочетание противопоказано",
+     "patient_text": "Не принимайте вместе", "ask_doctor": true},
+    {"id": "serotonergic", "a": {"classes": ["ssri", "snri"]}, "b": {"classes": ["tramadol", "triptan", "st_johns_wort"]},
+     "severity": "yellow", "risk": "Риск серотонинового синдрома",
+     "patient_text": "Обсудите с врачом до начала приёма", "ask_doctor": true},
+    {"id": "bleeding", "a": {"classes": ["ssri", "snri"]}, "b": {"classes": ["antiplatelet", "nsaid", "anticoagulant"]},
+     "severity": "yellow", "risk": "Повышенный риск кровотечений",
+     "patient_text": "Обсудите с врачом до начала приёма", "ask_doctor": true},
+    {"id": "phenazepam_depressants", "a": {"substances": ["phenazepam"]}, "b": {"classes": ["alcohol", "opioid"]},
+     "severity": "red", "risk": "Сильное угнетение сознания и дыхания",
+     "patient_text": "Не принимайте вместе", "ask_doctor": true},
+    {"id": "alcohol", "a": {"formulary": true}, "b": {"classes": ["alcohol"]},
+     "severity": "info", "risk": "Усиление побочных эффектов; алкоголь ухудшает течение тревоги и депрессии",
+     "patient_text": "Алкоголь на фоне лечения не рекомендуется", "ask_doctor": false}
+  ]
+}

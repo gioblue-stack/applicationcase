@@ -1,0 +1,26 @@
+{
+  "source": "Положение §7.2; значения В4 и В5 — предложения, утверждённые для альфы, требуют утверждения врачами",
+  "approval": {"status": "draft", "approved_by": null, "approved_at": null},
+  "values": {
+    "phq9_increase_yellow": 5,
+    "gad7_increase_yellow": 4,
+    "missed_doses_in_row_yellow": 2,
+    "low_mood_max_yellow": 3,
+    "low_mood_days_yellow": 3,
+    "no_data_days_yellow": 7,
+    "unscheduled_mood_drop_vs_prev_week_mean": 4,
+    "unscheduled_very_low_mood_max": 2,
+    "unscheduled_very_low_mood_days": 3,
+    "unscheduled_insomnia_sleep_hours_below": 4,
+    "unscheduled_insomnia_anxiety_min": 7,
+    "unscheduled_insomnia_nights": 3,
+    "unscheduled_after_dose_change_every_days": 3,
+    "unscheduled_after_dose_change_window_days": 14,
+    "weekly_reminder_after_days": 1,
+    "weekly_missed_after_days": 3,
+    "diary_late_fill_until_hour_next_day": 12,
+    "self_check_min_interval_days": 14,
+    "free_text_max_chars": 500,
+    "dose_no_response_after_hours": 3
+  }
+}

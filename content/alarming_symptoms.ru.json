@@ -1,0 +1,37 @@
+{
+  "source": "Положение §7.5. Колонка doctor_meaning пациенту не показывается.",
+  "approval": {"status": "draft", "approved_by": null, "approved_at": null,
+               "note": "Список утверждают врачи команды"},
+  "symptoms": [
+    {"code": "anaphylaxis", "patient_text": "Отёк лица, губ или языка; трудно дышать; сыпь с отёком",
+     "doctor_meaning": "Тяжёлая аллергическая реакция", "action": "emergency_112", "flag_level": "red"},
+    {"code": "serotonin_syndrome", "patient_text": "Жар, дрожь или подёргивания мышц, сильная потливость, спутанность, возбуждение",
+     "doctor_meaning": "Серотониновый синдром", "action": "emergency_112", "flag_level": "red"},
+    {"code": "nms", "patient_text": "Высокая температура вместе с сильной скованностью мышц",
+     "doctor_meaning": "Злокачественный нейролептический синдром (при приёме антипсихотиков)", "action": "emergency_112", "flag_level": "red"},
+    {"code": "seizures", "patient_text": "Судороги; потеря сознания",
+     "doctor_meaning": "Разные причины, требующие срочной помощи", "action": "emergency_112", "flag_level": "red"},
+    {"code": "arrhythmia", "patient_text": "Сильное сердцебиение или перебои в работе сердца, боль в груди, обморок",
+     "doctor_meaning": "Нарушение ритма сердца", "action": "emergency_112", "flag_level": "red"},
+    {"code": "gi_bleeding", "patient_text": "Кровь в рвоте, чёрный стул",
+     "doctor_meaning": "Желудочно-кишечное кровотечение", "action": "emergency_112", "flag_level": "red"},
+    {"code": "liver", "patient_text": "Пожелтение кожи или глаз, тёмная моча",
+     "doctor_meaning": "Поражение печени", "action": "contact_doctor_today_112_if_unwell", "flag_level": "red"},
+    {"code": "bleeding", "patient_text": "Необычные синяки, кровоточивость дёсен",
+     "doctor_meaning": "Нарушение свёртываемости (особенно при сочетании с обезболивающими или препаратами, разжижающими кровь)", "action": "contact_doctor_today", "flag_level": "red"},
+    {"code": "hyponatremia", "patient_text": "Сильная слабость, спутанность, головная боль и тошнота (особенно у пожилых)",
+     "doctor_meaning": "Снижение натрия в крови", "action": "contact_doctor_today_112_if_confusion", "flag_level": "red"},
+    {"code": "mania", "patient_text": "Необычно приподнятое настроение, много энергии, почти не нужен сон, быстрая речь, рискованные поступки",
+     "doctor_meaning": "Возможный переход в маниакальное состояние", "action": "contact_doctor_today", "flag_level": "red"},
+    {"code": "akathisia", "patient_text": "Сильное внутреннее беспокойство, невозможно усидеть на месте",
+     "doctor_meaning": "Акатизия — побочный эффект ряда препаратов", "action": "contact_doctor_today", "flag_level": "yellow"},
+    {"code": "suicidal_thoughts", "patient_text": "Мысли о самоубийстве появились или усилились",
+     "doctor_meaning": "Суицидальный риск", "action": "risk_protocol", "flag_level": null}
+  ],
+  "action_texts": {
+    "emergency_112": "Это может быть опасно. Пожалуйста, позвоните 112 прямо сейчас. Мы сообщили вашему врачу.",
+    "contact_doctor_today_112_if_unwell": "Пожалуйста, свяжитесь с врачом сегодня. Если самочувствие плохое — позвоните 112. Мы сообщили вашему врачу.",
+    "contact_doctor_today_112_if_confusion": "Пожалуйста, свяжитесь с врачом сегодня. При спутанности сознания или судорогах — позвоните 112. Мы сообщили вашему врачу.",
+    "contact_doctor_today": "Пожалуйста, свяжитесь с врачом сегодня. Мы сообщили вашему врачу."
+  }
+}

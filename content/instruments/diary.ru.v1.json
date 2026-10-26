@@ -1,0 +1,40 @@
+{
+  "code": "DIARY",
+  "version": "ru-alpha-v1",
+  "source": "Положение §4.3. Не валидированная шкала, а дневник самонаблюдения: для динамики одного пациента, не для сравнения и не для диагностики.",
+  "approval": {"status": "draft", "approved_by": null, "approved_at": null,
+               "note": "Проект текста для демонстрации, требует утверждения врачами команды"},
+  "invitation": "Отметим самочувствие?",
+  "questions": [
+    {"id": "mood", "no": 1, "type": "scale", "text": "Какое у вас сегодня настроение?",
+     "min_label": "очень плохое", "max_label": "отличное"},
+    {"id": "interest", "no": 2, "type": "scale", "text": "Было ли сегодня что-то, что принесло интерес или удовольствие?",
+     "min_label": "совсем ничего", "max_label": "очень многое"},
+    {"id": "anxiety", "no": 3, "type": "scale", "text": "Насколько сильно вы сегодня тревожились?",
+     "min_label": "совсем нет", "max_label": "очень сильно"},
+    {"id": "worry_control", "no": 4, "type": "scale", "text": "Удавалось ли вам контролировать беспокойство?",
+     "min_label": "совсем не удавалось", "max_label": "полностью"},
+    {"id": "sleep", "no": 5, "type": "sleep", "text": "Как вы спали прошлой ночью?",
+     "hours_step": 0.5, "quality_min_label": "очень плохо", "quality_max_label": "отлично"},
+    {"id": "energy", "no": 6, "type": "scale", "text": "Сколько у вас сегодня было сил?",
+     "min_label": "совсем не было", "max_label": "очень много"},
+    {"id": "meds_taken", "no": 7, "type": "meds", "text": "Приняли ли вы лекарства по схеме?", "medication_only": true,
+     "options": [
+       {"value": "all", "label": "Все"},
+       {"value": "missed", "label": "Пропустил(а)"},
+       {"value": "self_changed", "label": "Изменил(а) дозу сам(а)"}
+     ]},
+    {"id": "side_effects", "no": 8, "type": "side_effects", "text": "Были ли неприятные ощущения после лекарств?",
+     "medication_only": true}
+  ],
+  "side_effect_options": [
+    {"code": "nausea", "label": "Тошнота"},
+    {"code": "drowsiness", "label": "Сонливость"},
+    {"code": "headache", "label": "Головная боль"},
+    {"code": "tremor", "label": "Тремор (дрожь)"},
+    {"code": "palpitations", "label": "Сердцебиение"},
+    {"code": "libido_decrease", "label": "Снижение либидо"},
+    {"code": "other", "label": "Другое", "free_text": true}
+  ],
+  "late_fill_note": "заполнено позже"
+}

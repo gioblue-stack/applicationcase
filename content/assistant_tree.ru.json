@@ -1,0 +1,73 @@
+{
+  "source": "Положение §5.4 — блоки 1–9. Подписи кнопок дословно. Источники: Д — данные пациента, И — инструкция/взаимодействия, К — утверждённые тексты, В — сразу к врачу.",
+  "follow_up": {"helped": "Ответ помог", "still_ask_doctor": "Всё равно хочу спросить врача"},
+  "blocks": [
+    {"no": 1, "title": "Мои препараты", "buttons": [
+      {"id": "how_to_take", "label": "Как принимать препарат? (время, до или после еды)", "sources": ["Д", "И"], "handler": "how_to_take"},
+      {"id": "missed_dose", "label": "Я пропустил(а) приём — что делать?", "sources": ["Д"], "handler": "missed_dose_rule"},
+      {"id": "combine", "label": "Можно ли принимать вместе с…", "sources": ["И"], "handler": "choose_substance",
+       "choices": ["другой препарат", "безрецептурное средство", "БАД", "алкоголь"]},
+      {"id": "onset", "label": "Когда начнёт действовать препарат?", "sources": ["К"], "handler": "text", "text": "onset_antidepressants"},
+      {"id": "driving", "label": "Можно ли водить машину на этом препарате?", "sources": ["И"], "handler": "instruction", "section": "driving"},
+      {"id": "reduce_or_stop", "label": "Хочу снизить дозу или отменить препарат", "sources": ["В"], "handler": "handoff", "text": "withdrawal_warning"},
+      {"id": "pregnancy", "label": "Беременность или её планирование", "sources": ["В"], "handler": "handoff", "text": "pregnancy_handoff"}
+    ]},
+    {"no": 2, "title": "Побочные эффекты", "buttons": [
+      {"id": "side_effect", "label": "У меня появилось…", "sources": ["И"], "handler": "choose_side_effect"},
+      {"id": "alarming", "label": "Тревожные симптомы", "sources": ["В"], "handler": "choose_alarming_symptom"},
+      {"id": "side_effect_persistent", "label": "Побочный эффект не проходит или мешает жить", "sources": ["В"], "handler": "handoff"}
+    ]},
+    {"no": 3, "title": "Мой план лечения", "buttons": [
+      {"id": "current_meds", "label": "Что я принимаю сейчас", "sources": ["Д"], "handler": "current_meds"},
+      {"id": "upcoming", "label": "Что изменится дальше (повышение дозы, этапы)", "sources": ["Д"], "handler": "upcoming_changes"},
+      {"id": "next_visit", "label": "Когда следующий визит и анализы", "sources": ["Д"], "handler": "next_visit_and_labs"},
+      {"id": "why_drug", "label": "Зачем мне этот препарат?", "sources": ["К", "В"], "handler": "why_drug", "offer_doctor": true},
+      {"id": "duration", "label": "Сколько будет длиться лечение?", "sources": ["К"], "handler": "text", "text": "treatment_duration", "offer_doctor": true}
+    ]},
+    {"no": 4, "title": "Мой прогресс", "buttons": [
+      {"id": "dynamics", "label": "Как менялось моё состояние за неделю или месяц", "sources": ["Д"], "handler": "progress"},
+      {"id": "results", "label": "Результаты моих последних опросников", "sources": ["Д"], "handler": "latest_results"},
+      {"id": "adherence", "label": "Как регулярно я принимал(а) препараты", "sources": ["Д"], "handler": "adherence"},
+      {"id": "not_better", "label": "Почему мне не становится лучше?", "sources": ["К", "В"], "handler": "text", "text": "why_not_better", "offer_doctor": true}
+    ]},
+    {"no": 5, "title": "Анализы и обследования", "buttons": [
+      {"id": "labs", "label": "Какие анализы назначены и когда", "sources": ["Д"], "handler": "labs_list"},
+      {"id": "lab_prep", "label": "Как подготовиться к анализу", "sources": ["К"], "handler": "text", "text": "lab_preparation"},
+      {"id": "lab_done", "label": "Отметить, что сдал(а), или загрузить результат", "sources": ["Д"], "handler": "action", "action": "open_labs"},
+      {"id": "lab_meaning", "label": "Что означают мои результаты?", "sources": ["В"], "handler": "handoff", "text": "lab_results_handoff"}
+    ]},
+    {"no": 6, "title": "О моём состоянии", "buttons": [
+      {"id": "what_is", "label": "Что такое депрессия или тревожное расстройство", "sources": ["К"], "handler": "text",
+       "texts": ["what_is_depression", "what_is_anxiety_disorder"]},
+      {"id": "what_helps", "label": "Что помогает, кроме лекарств: сон, режим, активность", "sources": ["К"], "handler": "text", "text": "what_helps"},
+      {"id": "hard_day", "label": "Как пережить тяжёлый день", "sources": ["К"], "handler": "action", "action": "open_safety_plan"},
+      {"id": "tell_loved_ones", "label": "Как рассказать о диагнозе или лечении близким", "sources": ["К"], "handler": "text", "text": "telling_loved_ones"}
+    ]},
+    {"no": 7, "title": "Связаться с врачом", "always": true, "buttons": [
+      {"id": "ask_doctor", "label": "Задать вопрос врачу", "sources": ["В"], "handler": "action", "action": "ask_doctor_form"},
+      {"id": "appointment", "label": "Записаться на приём или перенести визит", "sources": ["В"], "handler": "handoff"},
+      {"id": "feel_very_bad", "label": "Мне сейчас очень плохо", "sources": [], "handler": "action", "action": "panic"}
+    ]},
+    {"no": 8, "title": "Приложение", "buttons": [
+      {"id": "change_reminders", "label": "Как изменить время напоминаний", "sources": ["К"], "handler": "text", "text": "change_reminders"},
+      {"id": "how_diary", "label": "Как заполнять дневник", "sources": ["К"], "handler": "text", "text": "how_diary"},
+      {"id": "who_sees_data", "label": "Кто видит мои данные", "sources": ["К"], "handler": "text", "text": "who_sees_data"},
+      {"id": "support", "label": "Сообщить о проблеме в работе приложения", "sources": [], "handler": "text", "text": "support_unavailable"}
+    ]},
+    {"no": 9, "title": "Я был(а) у другого врача", "buttons": [
+      {"id": "new_drug", "label": "Мне назначили новый препарат", "sources": ["И"], "handler": "action", "action": "add_other_medication"},
+      {"id": "attach", "label": "Прикрепить заключение или фото назначений", "sources": ["В"], "handler": "action", "action": "attach_file"},
+      {"id": "message_doctor", "label": "Написать сообщение врачу", "sources": ["В"], "handler": "action", "action": "message_form"}
+    ]}
+  ],
+  "side_effect_choices": [
+    {"code": "nausea", "label": "Тошнота"},
+    {"code": "drowsiness", "label": "Сонливость"},
+    {"code": "headache", "label": "Головная боль"},
+    {"code": "libido_decrease", "label": "Снижение либидо"},
+    {"code": "weight_gain", "label": "Прибавка веса"},
+    {"code": "tremor", "label": "Тремор (дрожь)"},
+    {"code": "palpitations", "label": "Сердцебиение"},
+    {"code": "other", "label": "Другое", "free_text": true}
+  ]
+}

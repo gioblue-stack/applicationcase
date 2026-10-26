@@ -1,0 +1,20 @@
+{
+  "description": "Проверка взаимодействий по демо-базе §7.8. Общие кейсы для Python и TS. free — название вне базы. expected — уровни найденных правил по убыванию опасности.",
+  "cases": [
+    {"name": "антидепрессант + ингибиторы МАО", "a": "sertraline", "b": "maoi", "expected": ["red"], "rules": ["antidepressant_maoi"]},
+    {"name": "миртазапин (не СИОЗС) + ингибиторы МАО", "a": "mirtazapine", "b": "maoi", "expected": ["red"], "rules": ["antidepressant_maoi"]},
+    {"name": "агомелатин + ципрофлоксацин", "a": "agomelatine", "b": "ciprofloxacin", "expected": ["red"], "rules": ["agomelatine_duloxetine_cyp1a2"]},
+    {"name": "флувоксамин + дулоксетин (в обратном порядке)", "a": "fluvoxamine", "b": "duloxetine", "expected": ["red"], "rules": ["agomelatine_duloxetine_cyp1a2"]},
+    {"name": "Игорь: эсциталопрам + трамадол", "a": "escitalopram", "b": "tramadol", "expected": ["yellow"], "rules": ["serotonergic"]},
+    {"name": "венлафаксин + триптаны", "a": "venlafaxine", "b": "triptans", "expected": ["yellow"], "rules": ["serotonergic"]},
+    {"name": "сертралин + зверобой", "a": "sertraline", "b": "st_johns_wort", "expected": ["yellow"], "rules": ["serotonergic"]},
+    {"name": "сертралин + аспирин", "a": "sertraline", "b": "aspirin", "expected": ["yellow"], "rules": ["bleeding"]},
+    {"name": "дулоксетин + варфарин", "a": "duloxetine", "b": "warfarin", "expected": ["yellow"], "rules": ["bleeding"]},
+    {"name": "феназепам + алкоголь", "a": "phenazepam", "b": "alcohol", "expected": ["red", "info"], "rules": ["phenazepam_depressants", "alcohol"]},
+    {"name": "феназепам + трамадол (опиоид)", "a": "phenazepam", "b": "tramadol", "expected": ["red"], "rules": ["phenazepam_depressants"]},
+    {"name": "сертралин + алкоголь", "a": "sertraline", "b": "alcohol", "expected": ["info"], "rules": ["alcohol"]},
+    {"name": "миртазапин + трамадол — правила нет", "a": "mirtazapine", "b": "tramadol", "expected": ["unknown"], "rules": [null]},
+    {"name": "сертралин + миртазапин — правила нет", "a": "sertraline", "b": "mirtazapine", "expected": ["unknown"], "rules": [null]},
+    {"name": "сертралин + препарат вне базы", "a": "sertraline", "free": "Парацетамол", "expected": ["unknown"], "rules": [null]}
+  ]
+}

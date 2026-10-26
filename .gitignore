@@ -1,0 +1,18 @@
+# Окружение и сборка
+.venv/
+venv/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Секреты: MC_JWT_SECRET, MC_DATA_KEY, MC_OTP_PEPPER и пр. — только в окружении
+.env
+.env.*
+
+# Вложения пациентов (зашифрованные файлы) — не храним в репозитории
+var/uploads/
+
+# IDE и система
+.idea/
+.DS_Store

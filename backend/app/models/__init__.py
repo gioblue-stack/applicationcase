@@ -1,0 +1,106 @@
+"""Все модели: импорт регистрирует таблицы в Base.metadata (нужно Alembic)."""
+
+from app.models.communication import AssistantInteraction, Attachment, Message
+from app.models.flags import Flag, Notification
+from app.models.identity import (
+    Account,
+    AuditLog,
+    CareLink,
+    Consent,
+    Device,
+    DoctorProfile,
+    LoginCode,
+    PatientProfile,
+    RefreshToken,
+)
+from app.models.observation import (
+    DiaryEntry,
+    DiarySideEffect,
+    PanicEvent,
+    QuestionnaireAnswer,
+    QuestionnaireSchedule,
+    QuestionnaireSubmission,
+    RiskAssessment,
+    RiskFactors,
+    SafetyPlan,
+    SideEffectReport,
+)
+from app.models.reference import (
+    AlarmingSymptom,
+    ApprovedText,
+    HelpPhone,
+    IcdCode,
+    Instrument,
+    InteractionRule,
+    SpecialistDemo,
+    Substance,
+    Threshold,
+)
+from app.models.treatment import (
+    Diagnosis,
+    DoseEvent,
+    LabEvent,
+    LabOrder,
+    OtherMedication,
+    Prescription,
+    RegimenChange,
+    TitrationStep,
+)
+
+# Таблицы, в которых отправленные данные нельзя изменить (§1.1). UPDATE запрещён триггером.
+# safety_plan версионируется новыми строками, но врач отмечает просмотр (doctor_reviewed_at), поэтому не здесь.
+IMMUTABLE_TABLES = (
+    "diary_entry",
+    "diary_side_effect",
+    "questionnaire_submission",
+    "questionnaire_answer",
+    "risk_assessment",
+    "panic_event",
+    "regimen_change",
+    "audit_log",
+)
+
+__all__ = [
+    "IMMUTABLE_TABLES",
+    "Account",
+    "AlarmingSymptom",
+    "ApprovedText",
+    "AssistantInteraction",
+    "Attachment",
+    "AuditLog",
+    "CareLink",
+    "Consent",
+    "Device",
+    "Diagnosis",
+    "DiaryEntry",
+    "DiarySideEffect",
+    "DoctorProfile",
+    "DoseEvent",
+    "Flag",
+    "HelpPhone",
+    "IcdCode",
+    "Instrument",
+    "LoginCode",
+    "InteractionRule",
+    "LabEvent",
+    "LabOrder",
+    "Message",
+    "Notification",
+    "OtherMedication",
+    "PanicEvent",
+    "PatientProfile",
+    "Prescription",
+    "QuestionnaireAnswer",
+    "QuestionnaireSchedule",
+    "QuestionnaireSubmission",
+    "RefreshToken",
+    "RegimenChange",
+    "RiskAssessment",
+    "RiskFactors",
+    "SafetyPlan",
+    "SideEffectReport",
+    "SpecialistDemo",
+    "Substance",
+    "Threshold",
+    "TitrationStep",
+]

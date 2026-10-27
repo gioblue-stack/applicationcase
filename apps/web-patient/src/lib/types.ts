@@ -127,3 +127,15 @@ export type Message = {
   status: string;
   created_at: string;
 };
+
+/** Лекарство без приёмов в выбранный день и его ближайший приём (GET /me/doses/next). */
+export type NextDose = {
+  prescription_id: string;
+  inn: string;
+  trade_name: string | null;
+  dose: string;
+  unit: string;
+  scheduled_at: string;
+  local_date: string;
+  local_time: string;
+};

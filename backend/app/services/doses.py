@@ -232,6 +232,53 @@ def doses_for_day(db: Session, *, patient_id: uuid.UUID, day: date, content: Con
     ]
 
 
+@dataclass(frozen=True)
+class NextDose:
+    prescription_id: uuid.UUID
+    inn: str
+    trade_name: str | None
+    dose: str
+    unit: str
+    scheduled_at: datetime
+    local_date: date
+    local_time: str
+
+
+NEXT_DOSE_HORIZON = timedelta(days=120)
+
+
+def next_doses_without_day(db: Session, *, patient_id: uuid.UUID, day: date, now: datetime,
+                           content: Content) -> list[NextDose]:
+    """Лекарства, у которых в этот день приёмов нет, и когда ближайший приём.
+
+    Так пациент видит, что назначение не потерялось: «первый приём завтра в 09:00», если врач назначил
+    препарат после сегодняшнего времени приёма или курс начинается позже. Время считается по схеме,
+    а не по созданным приёмам — воркер создаёт их только на 48 часов вперёд.
+    """
+    patient = get_patient(db, patient_id)
+    zone = ZoneInfo(patient.timezone)
+    start = datetime.combine(day, time.min, zone)
+    with_doses = set(db.scalars(
+        select(DoseEvent.prescription_id)
+        .where(DoseEvent.patient_id == patient_id, DoseEvent.scheduled_at >= start,
+               DoseEvent.scheduled_at < start + timedelta(days=1))
+    ))
+    result = []
+    for p in db.scalars(select(Prescription).where(Prescription.patient_id == patient_id,
+                                                   Prescription.stopped_at.is_(None))
+                        .order_by(Prescription.created_at)):
+        if p.id in with_doses:
+            continue
+        upcoming = planned(p, patient, steps_of(db, p.id), max(now, start), now + NEXT_DOSE_HORIZON)
+        if not upcoming:
+            continue  # курс закончился
+        at, dose = upcoming[0]
+        local = at.astimezone(zone)
+        result.append(NextDose(p.id, content.drugs.by_id(p.substance_id).inn, p.trade_name,
+                               treatment.format_dose(dose), p.unit, at, local.date(), local.strftime("%H:%M")))
+    return result
+
+
 def snooze_dose(db: Session, *, patient_id: uuid.UUID, dose_event_id: uuid.UUID, minutes: int, now: datetime,
                 content: Content) -> datetime:
     """«Напомнить через 15/30 минут»."""

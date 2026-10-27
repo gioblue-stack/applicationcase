@@ -180,3 +180,29 @@ def test_doctor_can_prescribe_aviandr(api, client, doctor_headers):
     [item] = client.get("/api/v1/me/plan", headers=patient).json()
     assert (item["inn"], item["trade_name"], item["current_dose"], item["times"]) == (
         "Маритупирдин", "Авиандр", "20", ["09:00", "21:00"])
+
+
+def test_patient_sees_next_dose_for_drugs_without_doses_today(api, client, doctor_headers):
+    """Сейчас 26.10 15:00: Авиандр на 09:00 назначен после сегодняшнего приёма — первый приём завтра."""
+    card = api.patient_card(doctor_headers, "Мария Демо")
+    patient = bearer(api.register_patient(card["invite_code"], "+79004445572"))
+    base = {"form": "таблетки", "unit": "мг", "in_person_visit_date": "2026-10-26", "missed_dose_rule": "skip_no_double"}
+    url = f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions"
+    client.post(url, headers=doctor_headers, json=base | {
+        "substance_id": "maritupirdine", "trade_name": "Авиандр", "dose": "20", "times": ["09:00"],
+        "start_date": "2026-10-26"})
+    client.post(url, headers=doctor_headers, json=base | {  # приём сегодня ещё будет — в списке «ближайших» его нет
+        "substance_id": "sertraline", "dose": "50", "times": ["20:00"], "start_date": "2026-10-26"})
+    later = client.post(url, headers=doctor_headers, json=base | {  # курс начнётся через неделю
+        "substance_id": "phenazepam", "dose": "0.5", "times": ["21:00"], "start_date": "2026-11-02"}).json()
+
+    today = client.get("/api/v1/me/doses", params={"day": "2026-10-26"}, headers=patient).json()
+    assert [(d["inn"], d["local_time"]) for d in today] == [("Сертралин", "20:00")]
+    nxt = client.get("/api/v1/me/doses/next", params={"day": "2026-10-26"}, headers=patient).json()
+    assert [(d["inn"], d["trade_name"], d["dose"], d["local_date"], d["local_time"]) for d in nxt] == [
+        ("Маритупирдин", "Авиандр", "20", "2026-10-27", "09:00"),
+        ("Феназепам", None, "0,5", "2026-11-02", "21:00")]  # доза по-русски, с запятой
+
+    client.post(f"/api/v1/doctor/prescriptions/{later['id']}/stop", headers=doctor_headers, json={})
+    nxt = client.get("/api/v1/me/doses/next", params={"day": "2026-10-26"}, headers=patient).json()
+    assert [d["inn"] for d in nxt] == ["Маритупирдин"]

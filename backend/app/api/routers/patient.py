@@ -188,6 +188,12 @@ def day_doses(day: date, patient: CurrentPatient, db: DB, content: ContentDep):
     return doses.doses_for_day(db, patient_id=patient.id, day=day, content=content)
 
 
+@router.get("/doses/next", response_model=list[doses.NextDose])
+def next_doses(day: date, patient: CurrentPatient, db: DB, now: Now, content: ContentDep):
+    """Для экрана «Сегодня»: лекарства без приёмов в этот день и их ближайший приём."""
+    return doses.next_doses_without_day(db, patient_id=patient.id, day=day, now=now, content=content)
+
+
 class DoseAnswerIn(BaseModel):
     response: DoseResponse
     actual_dose: Decimal | None = Field(None, gt=0)

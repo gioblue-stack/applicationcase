@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import HelpView from "@/components/HelpView";
+import { MascotSays } from "@/components/Mascot";
 import Shell, { Card, ErrorText, PrimaryButton } from "@/components/Shell";
 import { api, newId, nowIso } from "@/lib/client";
 import { useContent } from "@/lib/content";
@@ -58,7 +59,9 @@ export default function QuestionnairePage() {
   if (result) {
     return (
       <Shell title={instrument.title} back>
-        {result.risk?.screen && <div className="mt-4"><HelpView screen={result.risk.screen} /></div>}
+        {result.risk?.screen
+          ? <div className="mt-4"><HelpView screen={result.risk.screen} /></div>
+          : <MascotSays pose="standing">Спасибо, что ответили на все вопросы.</MascotSays>}
         <Card>
           <p className="text-lg">{result.feedback.result_text}</p>
           {result.feedback.change_text && <p className="mt-2">{result.feedback.change_text}</p>}
@@ -66,11 +69,11 @@ export default function QuestionnairePage() {
         </Card>
         {next ? (
           <Link href={`/questionnaire/${next}`} replace
-                className="mt-4 block rounded-xl bg-teal-600 py-3 text-center font-semibold text-white">
+                className="mt-4 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
             Дальше: {content!.instruments[next].title}
           </Link>
         ) : (
-          <Link href="/" className="mt-4 block text-center text-teal-700">На главную</Link>
+          <Link href="/" className="mt-4 block text-center text-brand-700">На главную</Link>
         )}
       </Shell>
     );
@@ -86,7 +89,7 @@ export default function QuestionnairePage() {
             {instrument.options.map((o) => (
               <button key={o.value} type="button"
                       onClick={() => setAnswers(Object.assign([...answers], { [i]: o.value }))}
-                      className={`rounded-lg px-2 py-2 text-sm ${answers[i] === o.value ? "bg-teal-600 font-semibold text-white" : "bg-gray-100"}`}>
+                      className={`rounded-lg px-2 py-2 text-sm ${answers[i] === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
                 {o.label}
               </button>
             ))}
@@ -99,7 +102,7 @@ export default function QuestionnairePage() {
           <div className="grid grid-cols-2 gap-2">
             {instrument.difficulty.options.map((o) => (
               <button key={o.value} type="button" onClick={() => setDifficulty(difficulty === o.value ? null : o.value)}
-                      className={`rounded-lg px-2 py-2 text-sm ${difficulty === o.value ? "bg-teal-600 font-semibold text-white" : "bg-gray-100"}`}>
+                      className={`rounded-lg px-2 py-2 text-sm ${difficulty === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
                 {o.label}
               </button>
             ))}

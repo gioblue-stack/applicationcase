@@ -62,7 +62,7 @@ export default function DoseRow({ dose, onChange }: { dose: Dose; onChange: () =
       {dose.answerable && !result && !tooEarly && (
         <div className="mt-2 grid grid-cols-2 gap-2">
           <button onClick={() => answer(late ? "taken_late" : "taken")}
-                  className="rounded-lg bg-teal-600 py-2 text-sm font-semibold text-white">
+                  className="rounded-lg bg-brand-600 btn-3d py-2 text-sm font-semibold text-white">
             {late ? "Принял(а) позже" : "Принял(а)"}
           </button>
           <button onClick={() => answer("missed")} className="rounded-lg bg-gray-100 py-2 text-sm">Пропустил(а)</button>
@@ -84,7 +84,7 @@ export default function DoseRow({ dose, onChange }: { dose: Dose; onChange: () =
         <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); answer("self_changed", actual.replace(",", ".")); }}>
           <input value={actual} onChange={(e) => setActual(e.target.value)} inputMode="decimal" required
                  placeholder={`Сколько ${dose.unit} приняли`} className="flex-1 rounded-lg border border-gray-300 px-3 py-2" />
-          <button className="rounded-lg bg-teal-600 px-4 text-sm font-semibold text-white">Отметить</button>
+          <button className="rounded-lg bg-brand-600 btn-3d px-4 text-sm font-semibold text-white">Отметить</button>
         </form>
       )}
 
@@ -97,7 +97,7 @@ export default function DoseRow({ dose, onChange }: { dose: Dose; onChange: () =
       )}
       {result?.offer_risk_block && (
         <Link href={`/risk?trigger=${result.offer_risk_block}`}
-              className="mt-2 block rounded-lg bg-teal-50 p-3 text-sm text-teal-900 ring-1 ring-teal-200">
+              className="mt-2 block rounded-lg bg-brand-50 p-3 text-sm text-brand-900 ring-1 ring-brand-200">
           Ответьте, пожалуйста, на несколько вопросов о самочувствии →
         </Link>
       )}

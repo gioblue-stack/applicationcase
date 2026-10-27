@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import HelpView from "@/components/HelpView";
+import Mascot from "@/components/Mascot";
 import Scale from "@/components/Scale";
 import Shell, { Card, ErrorText, PrimaryButton } from "@/components/Shell";
 import { api, newId, nowIso } from "@/lib/client";
@@ -77,16 +78,20 @@ export default function DiaryPage() {
         {result.help_screen ? (
           <div className="mt-4"><HelpView screen={result.help_screen} /></div>
         ) : (
-          <Card><p className="text-lg font-semibold">Спасибо, записали ✓</p></Card>
+          <div className="mt-6 flex flex-col items-center text-center">
+            <Mascot pose="both-wings" size={160} />
+            <p className="mt-3 text-2xl font-extrabold text-brand-800">Записали!</p>
+            <p className="mt-1 font-semibold text-brand-900/70">Врач увидит, как меняется самочувствие день ото дня.</p>
+          </div>
         )}
         {result.offer_risk_block && (
           <Card className="ring-1 ring-amber-300">
             <p>Ответьте, пожалуйста, на несколько коротких вопросов о самочувствии.</p>
             <Link href={`/risk?trigger=${result.offer_risk_block}`}
-                  className="mt-3 block rounded-xl bg-teal-600 py-3 text-center font-semibold text-white">Ответить</Link>
+                  className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">Ответить</Link>
           </Card>
         )}
-        <Link href="/" className="mt-4 block text-center text-teal-700">На главную</Link>
+        <Link href="/" className="mt-4 block text-center text-brand-700">На главную</Link>
       </Shell>
     );
   }
@@ -122,7 +127,7 @@ export default function DiaryPage() {
             <div className="flex flex-col gap-2">
               {q.options!.map((o) => (
                 <button key={o.value} type="button" onClick={() => setMeds(meds === o.value ? null : o.value)}
-                        className={`rounded-lg py-2 ${meds === o.value ? "bg-teal-600 font-semibold text-white" : "bg-gray-100"}`}>
+                        className={`rounded-lg py-2 ${meds === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
                   {o.label}
                 </button>
               ))}
@@ -133,7 +138,7 @@ export default function DiaryPage() {
               <div className="grid grid-cols-2 gap-2">
                 {[true, false].map((v) => (
                   <button key={String(v)} type="button" onClick={() => setHadEffects(hadEffects === v ? null : v)}
-                          className={`rounded-lg py-2 ${hadEffects === v ? "bg-teal-600 font-semibold text-white" : "bg-gray-100"}`}>
+                          className={`rounded-lg py-2 ${hadEffects === v ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
                     {v ? "Да" : "Нет"}
                   </button>
                 ))}

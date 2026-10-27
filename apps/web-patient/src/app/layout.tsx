@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Nunito } from "next/font/google";
 import ServiceWorker from "@/components/ServiceWorker";
 import "./globals.css";
+
+// Округлый шрифт в духе маскота; кириллица нужна для всего интерфейса.
+const nunito = Nunito({ subsets: ["latin", "cyrillic"], weight: ["400", "600", "700", "800"], variable: "--font-nunito" });
 
 export const metadata: Metadata = {
   title: "Дневник самочувствия",
@@ -16,13 +20,13 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0d9488",
+  themeColor: "#3b6fc4",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
-      <body className="antialiased">
+    <html lang="ru" className={nunito.variable}>
+      <body className="font-sans antialiased">
         {children}
         <ServiceWorker />
       </body>

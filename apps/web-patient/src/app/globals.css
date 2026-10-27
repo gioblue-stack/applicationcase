@@ -1,15 +1,51 @@
 @import "tailwindcss";
 
-/* Только светлая тема: спокойные цвета, крупные элементы под палец. */
+/* Палитра снята с маскота: синий пингвин, кремовое брюшко, оранжевый клюв.
+   Только светлая тема. Красный остаётся только у кнопок помощи. */
+@theme {
+  --color-brand-50: #eef4fd;
+  --color-brand-100: #dce8fb;
+  --color-brand-200: #b9d0f5;
+  --color-brand-300: #7fa9ee;
+  --color-brand-500: #5b8fe0;
+  --color-brand-600: #3b6fc4;
+  --color-brand-700: #2b58a5;
+  --color-brand-800: #1b3a73;
+  --color-brand-900: #142b57;
+  --color-cream-100: #fdf6e6;
+  --color-cream-300: #f8e7be;
+  --color-beak: #f7a530;
+  --font-sans: var(--font-nunito), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
 html,
 body {
-  background: #f5f7f6;
-  color: #111827;
+  background: #faf7f0;
+  color: #142b57;
 }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* «Объёмные» кнопки как в Duolingo: подложка снизу, при нажатии кнопка проседает. */
+@layer components {
+  .btn-3d {
+    box-shadow: 0 4px 0 var(--color-brand-800);
+    transition: transform 60ms, box-shadow 60ms;
+  }
+  .btn-3d:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--color-brand-800);
+  }
+  .btn-3d-red {
+    box-shadow: 0 4px 0 #991b1b;
+    transition: transform 60ms, box-shadow 60ms;
+  }
+  .btn-3d-red:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #991b1b;
+  }
 }
 
 /* Отступы под «чёлку» и полосу жестов, когда сайт открыт с рабочего стола. */

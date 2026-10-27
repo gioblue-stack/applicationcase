@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Mascot from "@/components/Mascot";
 import { ErrorText, PrimaryButton } from "@/components/Shell";
 import { useContent } from "@/lib/content";
 
@@ -59,11 +60,16 @@ export default function LoginPage() {
 
   return (
     <div className="safe-top mx-auto flex min-h-dvh max-w-lg flex-col px-4 pb-10">
-      <h1 className="mt-10 text-2xl font-semibold">Дневник самочувствия</h1>
-      <p className="mt-2 text-gray-600">Дневник, опросники и приём лекарств — вместе с вашим врачом.</p>
+      <div className="mt-8 flex flex-col items-center text-center">
+        <Mascot pose="one-wing" size={132} />
+        <h1 className="mt-3 text-3xl font-extrabold text-brand-800">Дневник самочувствия</h1>
+        <p className="mt-2 font-semibold text-brand-900/70">
+          Привет! Я помогу не забывать про дневник, опросники и лекарства — вместе с вашим врачом.
+        </p>
+      </div>
 
       {step === "login" ? (
-        <form onSubmit={requestCode} className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
+        <form onSubmit={requestCode} className="mt-8 rounded-2xl border-2 border-brand-100 bg-white p-5">
           <label className="block text-sm font-medium" htmlFor="login">Телефон или e-mail</label>
           <input id="login" value={login} onChange={(e) => setLogin(e.target.value)} required autoComplete="username"
                  inputMode="email" placeholder="+7 900 000-00-00"
@@ -72,7 +78,7 @@ export default function LoginPage() {
           <ErrorText>{error}</ErrorText>
         </form>
       ) : (
-        <form onSubmit={signIn} className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
+        <form onSubmit={signIn} className="mt-8 rounded-2xl border-2 border-brand-100 bg-white p-5">
           <p className="text-sm text-gray-600">Код отправлен на {login}.</p>
           <label className="mt-3 block text-sm font-medium" htmlFor="code">Код из сообщения</label>
           <input id="code" value={code} onChange={(e) => setCode(e.target.value)} required inputMode="numeric"
@@ -106,13 +112,13 @@ export default function LoginPage() {
             Войти
           </PrimaryButton>
           <button type="button" onClick={() => { setStep("login"); setCode(""); setError(""); }}
-                  className="mt-3 w-full text-sm text-teal-700">Изменить телефон или e-mail</button>
+                  className="mt-3 w-full text-sm text-brand-700">Изменить телефон или e-mail</button>
           <ErrorText>{error}</ErrorText>
         </form>
       )}
 
       {content && <p className="mt-6 text-center text-xs text-gray-500">{content.disclaimer}</p>}
-      <Link href="/help" className="mt-auto block rounded-xl bg-red-600 py-3 text-center font-semibold text-white">
+      <Link href="/help" className="mt-auto block rounded-xl bg-red-600 btn-3d-red py-3 text-center font-semibold text-white">
         Мне сейчас очень плохо
       </Link>
     </div>

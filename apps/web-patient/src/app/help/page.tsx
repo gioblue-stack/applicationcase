@@ -36,7 +36,7 @@ export default function HelpPage() {
     <div className="safe-top mx-auto min-h-dvh max-w-lg px-4 pb-10">
       <div className="flex items-center justify-between py-3">
         <h1 className="text-xl font-semibold">Помощь</h1>
-        <Link href="/" className="text-teal-700">Закрыть</Link>
+        <Link href="/" className="text-brand-700">Закрыть</Link>
       </div>
       {screen ? (
         <HelpView screen={{ ...screen, fullscreen: true }} contacts={profile?.contacts} />
@@ -45,7 +45,7 @@ export default function HelpPage() {
           <p className="text-lg">Если вам нужна помощь сейчас — позвоните:</p>
           {FALLBACK.map((p) => (
             <a key={p.tel} href={`tel:${p.tel}`}
-               className="mt-3 block rounded-xl bg-red-600 px-4 py-4 text-center text-lg font-semibold text-white">
+               className="mt-3 block rounded-xl bg-red-600 btn-3d-red px-4 py-4 text-center text-lg font-semibold text-white">
               {p.display} — {p.service}
             </a>
           ))}

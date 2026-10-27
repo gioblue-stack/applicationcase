@@ -89,9 +89,9 @@ export default function RiskPage() {
         <ErrorText>{error}</ErrorText>
         {error && (
           <button onClick={() => send(answers)} disabled={busy}
-                  className="mt-3 w-full rounded-xl bg-teal-600 py-3 font-semibold text-white">Отправить ещё раз</button>
+                  className="mt-3 w-full rounded-xl bg-brand-600 btn-3d py-3 font-semibold text-white">Отправить ещё раз</button>
         )}
-        <Link href="/" className="mt-4 block text-center text-teal-700">На главную</Link>
+        <Link href="/" className="mt-4 block text-center text-brand-700">На главную</Link>
       </Shell>
     );
   }
@@ -103,14 +103,14 @@ export default function RiskPage() {
         <Card>
           <p className="text-lg leading-relaxed">{block.intro.text}</p>
           <button onClick={() => setStarted(nowIso())}
-                  className="mt-4 w-full rounded-xl bg-teal-600 py-3 font-semibold text-white">{block.intro.buttons.answer}</button>
+                  className="mt-4 w-full rounded-xl bg-brand-600 btn-3d py-3 font-semibold text-white">{block.intro.buttons.answer}</button>
           <button onClick={() => send({})} disabled={busy}
                   className="mt-2 w-full rounded-xl bg-gray-100 py-3">{block.intro.buttons.dismiss}</button>
         </Card>
         <Card>
           <p className="text-sm font-semibold text-gray-500">Если тяжело прямо сейчас</p>
           {phones.phones.map((p) => (
-            <a key={p.id} href={`tel:${p.tel}`} className="mt-2 block text-teal-800">
+            <a key={p.id} href={`tel:${p.tel}`} className="mt-2 block text-brand-800">
               <span className="font-semibold">{p.display}</span> — {p.service}
             </a>
           ))}
@@ -128,13 +128,13 @@ export default function RiskPage() {
           <div className="mt-4 grid grid-cols-2 gap-3">
             {block.answer_options.map((o) => (
               <button key={String(o.value)} onClick={() => answer(current.id, o.value)} disabled={busy || locked}
-                      className="rounded-xl bg-teal-600 py-4 text-lg font-semibold text-white disabled:opacity-60">
+                      className="rounded-xl bg-brand-600 btn-3d py-4 text-lg font-semibold text-white disabled:opacity-60">
                 {o.label}
               </button>
             ))}
           </div>
           {order.current.length > 0 && (
-            <button onClick={back} disabled={busy} className="mt-4 text-sm text-teal-700">‹ Назад</button>
+            <button onClick={back} disabled={busy} className="mt-4 text-sm text-brand-700">‹ Назад</button>
           )}
         </Card>
       )}

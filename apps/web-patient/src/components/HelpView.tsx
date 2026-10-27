@@ -12,12 +12,12 @@ export default function HelpView({ screen, contacts = [] }: { screen: HelpScreen
         {links.map((link) =>
           link!.kind === "call" ? (
             <a key={link!.href} href={link!.href}
-               className="rounded-xl bg-red-600 px-4 py-4 text-center text-lg font-semibold text-white active:bg-red-700">
+               className="rounded-xl bg-red-600 btn-3d-red px-4 py-4 text-center text-lg font-semibold text-white">
               {link!.label}
             </a>
           ) : (
             <Link key={link!.href} href={link!.href}
-                  className="rounded-xl bg-white px-4 py-4 text-center text-lg font-semibold text-teal-800 ring-1 ring-teal-600">
+                  className="rounded-xl bg-white px-4 py-4 text-center text-lg font-semibold text-brand-800 ring-1 ring-brand-600">
               {link!.label}
             </Link>
           ),
@@ -28,7 +28,7 @@ export default function HelpView({ screen, contacts = [] }: { screen: HelpScreen
         {screen.phones.map((p) => (
           <li key={p.id} className="py-3">
             <a href={`tel:${p.tel}`} className="block">
-              <span className="text-lg font-semibold text-teal-800">{p.display}</span>
+              <span className="text-lg font-semibold text-brand-800">{p.display}</span>
               <span className="block text-sm text-gray-700">{p.service}</span>
               <span className="block text-xs text-gray-500">{p.hours}</span>
             </a>

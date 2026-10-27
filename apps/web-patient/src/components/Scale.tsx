@@ -12,7 +12,7 @@ export default function Scale({ value, onChange, minLabel, maxLabel }: {
       <div className="grid grid-cols-11 gap-1">
         {Array.from({ length: 11 }, (_, n) => (
           <button key={n} type="button" aria-pressed={value === n} onClick={() => onChange(value === n ? null : n)}
-                  className={`rounded-md py-2 text-sm ${value === n ? "bg-teal-600 font-semibold text-white" : "bg-gray-100"}`}>
+                  className={`rounded-md py-2 text-sm ${value === n ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
             {n}
           </button>
         ))}

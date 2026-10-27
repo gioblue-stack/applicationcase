@@ -41,7 +41,7 @@ function Contacts({ title, list, onChange }: { title: string; list: Contact[]; o
         </div>
       ))}
       <button type="button" onClick={() => onChange([...list, { name: "", phone: null }])}
-              className="mt-3 text-sm text-teal-700">+ Добавить</button>
+              className="mt-3 text-sm text-brand-700">+ Добавить</button>
     </Card>
   );
 }
@@ -93,7 +93,7 @@ export default function SafetyPlanPage() {
     ].filter((g) => g.list.length > 0);
     return (
       <Shell title="План безопасности" back>
-        {saved && <p className="mt-3 rounded-lg bg-teal-50 p-3 text-sm text-teal-900">Сохранено. Врач увидит новую версию.</p>}
+        {saved && <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-900">Сохранено. Врач увидит новую версию.</p>}
         {TEXTS.filter((t) => plan[t.key]).map((t) => (
           <Card key={t.key}>
             <p className="text-sm font-semibold text-gray-500">{t.label}</p>
@@ -105,7 +105,7 @@ export default function SafetyPlanPage() {
             <p className="text-sm font-semibold text-gray-500">{g.title}</p>
             {g.list.map((c) => (
               <p key={`${c.name}${c.phone}`} className="mt-2">
-                {c.name}{c.phone && <> — <a href={`tel:${c.phone}`} className="font-semibold text-teal-800">{c.phone}</a></>}
+                {c.name}{c.phone && <> — <a href={`tel:${c.phone}`} className="font-semibold text-brand-800">{c.phone}</a></>}
               </p>
             ))}
           </Card>

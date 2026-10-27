@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import HelpView from "@/components/HelpView";
+import { MascotSays } from "@/components/Mascot";
 import Shell, { Card, ErrorText, PrimaryButton } from "@/components/Shell";
 import { ApiError, api, newId } from "@/lib/client";
 import type { HelpScreen, Message } from "@/lib/types";
@@ -59,7 +60,7 @@ export default function MessagesPage() {
   if (noDoctor) {
     return (
       <Shell title="Врачу">
-        <Card><p>Сообщения доступны, когда вы подключены к лечащему врачу по коду приглашения.</p></Card>
+        <MascotSays pose="standing">Сообщения доступны, когда вы подключены к лечащему врачу по коду приглашения.</MascotSays>
       </Shell>
     );
   }
@@ -82,9 +83,9 @@ export default function MessagesPage() {
           const mine = m.direction === "patient_to_doctor";
           return (
             <li key={m.id}
-                className={`max-w-[85%] rounded-2xl px-4 py-2 ${mine ? "self-end bg-teal-600 text-white" : "self-start bg-white shadow-sm"}`}>
+                className={`max-w-[85%] rounded-2xl px-4 py-2 ${mine ? "self-end bg-brand-600 text-white" : "self-start bg-white shadow-sm"}`}>
               <p className="whitespace-pre-line">{m.body}</p>
-              <p className={`mt-1 text-xs ${mine ? "text-teal-100" : "text-gray-400"}`}>{when(m.created_at)}</p>
+              <p className={`mt-1 text-xs ${mine ? "text-brand-100" : "text-gray-400"}`}>{when(m.created_at)}</p>
             </li>
           );
         })}

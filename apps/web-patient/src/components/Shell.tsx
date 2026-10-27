@@ -22,23 +22,23 @@ export default function Shell({ title, back, children }: { title: string; back?:
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col">
-      <header className="safe-top sticky top-0 z-10 bg-[#f5f7f6]/95 backdrop-blur">
+      <header className="safe-top sticky top-0 z-10 bg-[#faf7f0]/95 backdrop-blur">
         <div className="flex items-center gap-2 px-4 py-3">
           {back && (
-            <button onClick={() => router.back()} aria-label="Назад" className="-ml-2 px-2 text-2xl text-teal-700">
+            <button onClick={() => router.back()} aria-label="Назад" className="-ml-2 px-2 text-2xl text-brand-700">
               ‹
             </button>
           )}
-          <h1 className="text-xl font-semibold">{title}</h1>
+          <h1 className="text-xl font-extrabold text-brand-900">{title}</h1>
         </div>
       </header>
 
       <main className="flex-1 px-4 pb-40">{children}</main>
 
-      <div className="safe-bottom fixed inset-x-0 bottom-0 z-20 mx-auto max-w-lg border-t border-gray-200 bg-white">
+      <div className="safe-bottom fixed inset-x-0 bottom-0 z-20 mx-auto max-w-lg border-t-2 border-brand-100 bg-white">
         <div className="px-4 pt-3">
           <Link href="/help?panic=1"
-                className="block rounded-xl bg-red-600 py-3 text-center text-base font-semibold text-white active:bg-red-700">
+                className="block rounded-xl bg-red-600 btn-3d-red py-3 text-center text-base font-semibold text-white">
             Мне сейчас очень плохо
           </Link>
         </div>
@@ -47,7 +47,7 @@ export default function Shell({ title, back, children }: { title: string; back?:
             const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
             return (
               <Link key={tab.href} href={tab.href}
-                    className={`py-3 text-center text-sm ${active ? "font-semibold text-teal-700" : "text-gray-500"}`}>
+                    className={`py-3 text-center text-sm font-bold ${active ? "text-brand-600" : "text-gray-400"}`}>
                 {tab.label}
               </Link>
             );
@@ -59,13 +59,13 @@ export default function Shell({ title, back, children }: { title: string; back?:
 }
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`mt-4 rounded-2xl bg-white p-4 shadow-sm ${className}`}>{children}</section>;
+  return <section className={`mt-4 rounded-2xl border-2 border-brand-100 bg-white p-4 ${className}`}>{children}</section>;
 }
 
 export function PrimaryButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...props}
-            className={`w-full rounded-xl bg-teal-600 px-4 py-3 text-base font-semibold text-white active:bg-teal-700 disabled:opacity-50 ${props.className ?? ""}`} />
+            className={`w-full rounded-xl bg-brand-600 btn-3d px-4 py-3 text-base font-semibold text-white disabled:opacity-50 ${props.className ?? ""}`} />
   );
 }
 

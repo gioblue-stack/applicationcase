@@ -65,6 +65,8 @@ export function PrescribeForm({ patientId, onDone, onCancel }: {
   function pickDrug(id: string) {
     setSubstance(id);
     const drug = drugs.find((d) => d.id === id);
+    // Единственное торговое название подставляется само; при смене препарата старое не остаётся.
+    setTradeName(drug?.trade_names.length === 1 ? drug.trade_names[0] : "");
     // Правило по умолчанию — из инструкции, если оно сверено; в демо-базе его нет, и врач выбирает сам.
     setRule(drug?.default_missed_dose_rule ?? "");
     setHours(drug?.default_missed_dose_hours ? String(drug.default_missed_dose_hours) : "");
@@ -104,7 +106,11 @@ export function PrescribeForm({ patientId, onDone, onCancel }: {
           <span className="font-medium">Препарат (МНН)</span>
           <select required value={substance} onChange={(e) => pickDrug(e.target.value)} className={input}>
             <option value="">— выберите —</option>
-            {drugs.map((d) => <option key={d.id} value={d.id}>{d.inn}{d.group_label && ` — ${d.group_label}`}</option>)}
+            {drugs.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.inn}{d.trade_names.length > 0 && ` (${d.trade_names.join(", ")})`}{d.group_label && ` — ${d.group_label}`}
+              </option>
+            ))}
           </select>
         </label>
         <label className="space-y-1">

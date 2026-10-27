@@ -20,7 +20,10 @@ export async function api<T>(path: string, init?: { method?: string; body?: unkn
   }
   const data = response.status === 204 ? null : await response.json().catch(() => null);
   if (!response.ok) {
-    throw new ApiError(response.status, (data as { detail?: string } | null)?.detail ?? "Ошибка сервера");
+    const detail = (data as { detail?: unknown } | null)?.detail;
+    // 422 от проверки полей приходит списком ошибок — показываем общий текст, а не [object Object].
+    const message = typeof detail === "string" ? detail : Array.isArray(detail) ? "Проверьте заполнение полей" : "Ошибка сервера";
+    throw new ApiError(response.status, message);
   }
   return data as T;
 }

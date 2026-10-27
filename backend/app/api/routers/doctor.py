@@ -23,7 +23,7 @@ from app.domain.enums import (
     Sex,
 )
 from app.domain.treatment import Step
-from app.models import Flag, Prescription, RiskFactors
+from app.models import Flag, Prescription, RiskFactors, Substance
 from app.services import (
     assistant,
     attachments,
@@ -124,6 +124,23 @@ def set_risk_factors(body: RiskFactorsIn, patient: DoctorPatient, doctor: Curren
 class StepIn(BaseModel):
     effective_date: date
     dose: Decimal = Field(gt=0)
+
+
+class FormularyItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    inn: str
+    trade_names: list[str]
+    group_label: str | None
+    default_missed_dose_rule: MissedDoseRule | None
+    default_missed_dose_hours: int | None
+
+
+@router.get("/formulary", response_model=list[FormularyItem])
+def formulary(doctor: CurrentDoctor, db: DB):
+    """Препараты, которые можно внести в схему (демо-база §7.8). Вещества только для проверки взаимодействий — нет."""
+    return db.scalars(select(Substance).where(Substance.in_formulary.is_(True)).order_by(Substance.inn)).all()
 
 
 class PrescriptionIn(BaseModel):

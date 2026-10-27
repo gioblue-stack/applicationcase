@@ -421,6 +421,35 @@
     ]
    }
   },
+  "/api/v1/me/today": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Today",
+    "description": "Экран «Сегодня»: заполнен ли дневник, ждут ли опросники недели, нужен ли уточняющий блок.",
+    "operationId": "today_api_v1_me_today_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Today Api V1 Me Today Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
   "/api/v1/me/diary": {
    "post": {
     "tags": [
@@ -701,6 +730,53 @@
     ]
    }
   },
+  "/api/v1/me/panic-events": {
+   "post": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Press Panic",
+    "description": "«Мне сейчас очень плохо»: экран помощи на устройстве уже открыт, здесь — сигнал врачу.",
+    "operationId": "press_panic_api_v1_me_panic_events_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PanicIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PanicResult"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
   "/api/v1/me/plan": {
    "get": {
     "tags": [
@@ -729,6 +805,58 @@
       "HTTPBearer": []
      }
     ]
+   }
+  },
+  "/api/v1/me/doses": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Day Doses",
+    "operationId": "day_doses_api_v1_me_doses_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "day",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date",
+       "title": "Day"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/DoseView"
+         },
+         "title": "Response Day Doses Api V1 Me Doses Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
    }
   },
   "/api/v1/me/doses/{dose_event_id}/response": {
@@ -1608,6 +1736,37 @@
       }
      }
     }
+   }
+  },
+  "/api/v1/doctor/formulary": {
+   "get": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Formulary",
+    "description": "Препараты, которые можно внести в схему (демо-база §7.8). Вещества только для проверки взаимодействий — нет.",
+    "operationId": "formulary_api_v1_doctor_formulary_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/FormularyItem"
+         },
+         "type": "array",
+         "title": "Response Formulary Api V1 Doctor Formulary Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
    }
   },
   "/api/v1/doctor/patients/{patient_id}/prescriptions": {
@@ -3851,6 +4010,80 @@
     ],
     "title": "DoseStatus"
    },
+   "DoseView": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Id"
+     },
+     "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Scheduled At"
+     },
+     "local_time": {
+      "type": "string",
+      "title": "Local Time"
+     },
+     "inn": {
+      "type": "string",
+      "title": "Inn"
+     },
+     "trade_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Trade Name"
+     },
+     "dose": {
+      "type": "string",
+      "title": "Dose"
+     },
+     "unit": {
+      "type": "string",
+      "title": "Unit"
+     },
+     "status": {
+      "$ref": "#/components/schemas/DoseStatus"
+     },
+     "answerable": {
+      "type": "boolean",
+      "title": "Answerable"
+     },
+     "snoozed_until": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Snoozed Until"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "scheduled_at",
+     "local_time",
+     "inn",
+     "trade_name",
+     "dose",
+     "unit",
+     "status",
+     "answerable",
+     "snoozed_until"
+    ],
+    "title": "DoseView"
+   },
    "FeedbackIn": {
     "properties": {
      "helped": {
@@ -4015,6 +4248,67 @@
      "auto_resolved"
     ],
     "title": "FlagStatus"
+   },
+   "FormularyItem": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "inn": {
+      "type": "string",
+      "title": "Inn"
+     },
+     "trade_names": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Trade Names"
+     },
+     "group_label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Group Label"
+     },
+     "default_missed_dose_rule": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/MissedDoseRule"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "default_missed_dose_hours": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Default Missed Dose Hours"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "inn",
+     "trade_names",
+     "group_label",
+     "default_missed_dose_rule",
+     "default_missed_dose_hours"
+    ],
+    "title": "FormularyItem"
    },
    "HTTPValidationError": {
     "properties": {
@@ -4719,6 +5013,54 @@
      "added_at"
     ],
     "title": "OtherMedicationView"
+   },
+   "PanicIn": {
+    "properties": {
+     "client_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Client Id"
+     },
+     "pressed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Pressed At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "client_id",
+     "pressed_at"
+    ],
+    "title": "PanicIn"
+   },
+   "PanicResult": {
+    "properties": {
+     "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Event Id"
+     },
+     "created": {
+      "type": "boolean",
+      "title": "Created"
+     },
+     "flag_raised": {
+      "type": "boolean",
+      "title": "Flag Raised"
+     },
+     "screen": {
+      "$ref": "#/components/schemas/HelpScreen"
+     }
+    },
+    "type": "object",
+    "required": [
+     "event_id",
+     "created",
+     "flag_raised",
+     "screen"
+    ],
+    "title": "PanicResult"
    },
    "PatientCard": {
     "properties": {

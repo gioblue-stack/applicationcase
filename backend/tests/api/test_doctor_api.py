@@ -119,3 +119,49 @@ def test_patient_sees_day_doses_in_own_timezone(api, client, doctor_headers, db,
 
     stranger = bearer(api.register_self("+79004445568"))
     assert client.get("/api/v1/me/doses", params={"day": "2026-10-26"}, headers=stranger).json() == []
+
+
+def test_formulary_lists_only_prescribable_drugs(api, client, doctor_headers):
+    drugs = client.get("/api/v1/doctor/formulary", headers=doctor_headers).json()
+    ids = [d["id"] for d in drugs]
+    assert "escitalopram" in ids and "phenazepam" in ids and len(ids) == 8
+    assert "tramadol" not in ids and "alcohol" not in ids  # только для проверки взаимодействий
+    assert [d["inn"] for d in drugs] == sorted(d["inn"] for d in drugs)
+
+    patient = bearer(api.register_self("+79004445569"))
+    assert client.get("/api/v1/doctor/formulary", headers=patient).status_code in (401, 403)
+
+
+def test_prescribe_form_flow_change_dose_then_stop(api, client, doctor_headers):
+    """Тот же JSON, что отправляет форма «Назначить препарат» в кабинете врача."""
+    card = api.patient_card(doctor_headers, "Анна Демо")
+    patient = bearer(api.register_patient(card["invite_code"], "+79004445570"))
+    form = {
+        "substance_id": "sertraline", "trade_name": None, "form": "таблетки", "dose": "50", "unit": "мг",
+        "times": ["09:00"], "with_food": "after", "instructions": None, "start_date": "2026-10-26", "end_date": None,
+        "in_person_visit_date": "2026-10-26", "missed_dose_rule": "take_if_more_than_hours", "missed_dose_hours": 12,
+        "titration": [{"effective_date": "2026-11-09", "dose": "100"}],
+    }
+    created = client.post(f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions", headers=doctor_headers,
+                          json=form)
+    assert created.status_code == 201, created.text
+    pid = created.json()["id"]
+    [item] = client.get("/api/v1/me/plan", headers=patient).json()
+    assert (item["inn"], item["current_dose"], item["upcoming"]) == ("Сертралин", "50", ["с 09.11.2026 — 100 мг"])
+
+    # Правило «больше N часов» без N и начало до очного приёма — ошибки с понятным текстом.
+    bad = client.post(f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions", headers=doctor_headers,
+                      json=form | {"missed_dose_hours": None})
+    assert bad.status_code == 422 and isinstance(bad.json()["detail"], str)
+    early = client.post(f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions", headers=doctor_headers,
+                        json=form | {"start_date": "2026-10-20"})
+    assert early.status_code == 422 and "очного приёма" in early.json()["detail"]
+
+    changed = client.post(f"/api/v1/doctor/prescriptions/{pid}/dose-change", headers=doctor_headers,
+                          json={"effective_date": "2026-11-02", "dose": "75", "reason": None})
+    assert changed.status_code == 200, changed.text
+    assert client.get("/api/v1/me/plan", headers=patient).json()[0]["upcoming"][0] == "с 02.11.2026 — 75 мг"
+
+    stopped = client.post(f"/api/v1/doctor/prescriptions/{pid}/stop", headers=doctor_headers, json={"reason": None})
+    assert stopped.status_code == 200 and stopped.json()["stopped_at"] is not None
+    assert client.get("/api/v1/me/plan", headers=patient).json() == []

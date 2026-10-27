@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { DiaryCharts } from "@/components/DiaryCharts";
 import { Header } from "@/components/Header";
+import { PrescribeForm, PrescriptionActions } from "@/components/PrescribeForm";
 import { ScoresChart } from "@/components/ScoresChart";
 import { coveragePercent } from "@/lib/charts";
 import { api } from "@/lib/client";
@@ -41,6 +42,7 @@ export default function PatientCardPage() {
   const [risk, setRisk] = useState<RiskAssessmentView[]>([]);
   const [plan, setPlan] = useState<SafetyPlanView | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [prescribing, setPrescribing] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -120,7 +122,7 @@ export default function PatientCardPage() {
         </Section>
 
         <Section title="Лечение">
-          {card.treatment.length === 0 && <p className="text-sm text-slate-500">Схема лечения не внесена.</p>}
+          {card.treatment.length === 0 && !prescribing && <p className="text-sm text-slate-500">Схема лечения не внесена.</p>}
           {card.treatment.map((t) => (
             <div key={t.prescription_id} className="rounded border bg-white p-3 text-sm">
               <b>{t.inn}</b>{t.trade_name && ` (${t.trade_name})`} — {t.current_dose} {t.unit}, {t.times.join(", ")}
@@ -129,8 +131,17 @@ export default function PatientCardPage() {
                 <ShiftTitration onShift={(days, reason) =>
                   act(`doctor/prescriptions/${t.prescription_id}/shift`, { days, reason })} />
               )}
+              <PrescriptionActions prescriptionId={t.prescription_id} unit={t.unit} onDone={load} onError={setError} />
             </div>
           ))}
+          {prescribing ? (
+            <PrescribeForm patientId={id} onCancel={() => setPrescribing(false)}
+                           onDone={() => { setPrescribing(false); setError(null); load(); }} />
+          ) : (
+            <button onClick={() => setPrescribing(true)} className="rounded bg-slate-800 px-3 py-1 text-sm text-white">
+              + Назначить препарат
+            </button>
+          )}
           {card.other_medications.length > 0 && (
             <p className="text-sm">Другие препараты: {card.other_medications.map((m) => m.name).join(", ")}</p>
           )}

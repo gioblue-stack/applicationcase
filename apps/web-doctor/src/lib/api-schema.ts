@@ -191,6 +191,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today
+         * @description Экран «Сегодня»: заполнен ли дневник, ждут ли опросники недели, нужен ли уточняющий блок.
+         */
+        get: operations["today_api_v1_me_today_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/diary": {
         parameters: {
             query?: never;
@@ -293,6 +313,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/panic-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Press Panic
+         * @description «Мне сейчас очень плохо»: экран помощи на устройстве уже открыт, здесь — сигнал врачу.
+         */
+        post: operations["press_panic_api_v1_me_panic_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/plan": {
         parameters: {
             query?: never;
@@ -302,6 +342,23 @@ export interface paths {
         };
         /** Plan */
         get: operations["plan_api_v1_me_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/doses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Day Doses */
+        get: operations["day_doses_api_v1_me_doses_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -607,6 +664,26 @@ export interface paths {
         get?: never;
         /** Set Risk Factors */
         put: operations["set_risk_factors_api_v1_doctor_patients__patient_id__risk_factors_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/doctor/formulary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Formulary
+         * @description Препараты, которые можно внести в схему (демо-база §7.8). Вещества только для проверки взаимодействий — нет.
+         */
+        get: operations["formulary_api_v1_doctor_formulary_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1343,6 +1420,34 @@ export interface components {
          * @enum {string}
          */
         DoseStatus: "pending" | "taken" | "taken_late" | "missed" | "self_changed" | "no_response";
+        /** DoseView */
+        DoseView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Scheduled At
+             * Format: date-time
+             */
+            scheduled_at: string;
+            /** Local Time */
+            local_time: string;
+            /** Inn */
+            inn: string;
+            /** Trade Name */
+            trade_name: string | null;
+            /** Dose */
+            dose: string;
+            /** Unit */
+            unit: string;
+            status: components["schemas"]["DoseStatus"];
+            /** Answerable */
+            answerable: boolean;
+            /** Snoozed Until */
+            snoozed_until: string | null;
+        };
         /** FeedbackIn */
         FeedbackIn: {
             /** Helped */
@@ -1402,6 +1507,20 @@ export interface components {
          * @enum {string}
          */
         FlagStatus: "open" | "acknowledged" | "auto_resolved";
+        /** FormularyItem */
+        FormularyItem: {
+            /** Id */
+            id: string;
+            /** Inn */
+            inn: string;
+            /** Trade Names */
+            trade_names: string[];
+            /** Group Label */
+            group_label: string | null;
+            default_missed_dose_rule: components["schemas"]["MissedDoseRule"] | null;
+            /** Default Missed Dose Hours */
+            default_missed_dose_hours: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1681,6 +1800,32 @@ export interface components {
              * Format: date-time
              */
             added_at: string;
+        };
+        /** PanicIn */
+        PanicIn: {
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /**
+             * Pressed At
+             * Format: date-time
+             */
+            pressed_at: string;
+        };
+        /** PanicResult */
+        PanicResult: {
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /** Created */
+            created: boolean;
+            /** Flag Raised */
+            flag_raised: boolean;
+            screen: components["schemas"]["HelpScreen"];
         };
         /** PatientCard */
         PatientCard: {
@@ -2812,6 +2957,28 @@ export interface operations {
             };
         };
     };
+    today_api_v1_me_today_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     submit_diary_api_v1_me_diary_post: {
         parameters: {
             query?: never;
@@ -3010,6 +3177,39 @@ export interface operations {
             };
         };
     };
+    press_panic_api_v1_me_panic_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PanicIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PanicResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     plan_api_v1_me_plan_get: {
         parameters: {
             query?: never;
@@ -3026,6 +3226,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlanItem"][];
+                };
+            };
+        };
+    };
+    day_doses_api_v1_me_doses_get: {
+        parameters: {
+            query: {
+                day: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DoseView"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3616,6 +3847,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    formulary_api_v1_doctor_formulary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormularyItem"][];
                 };
             };
         };

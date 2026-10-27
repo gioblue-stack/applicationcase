@@ -39,6 +39,7 @@ fi
 
 cd "$ROOT/backend"
 ../.venv/bin/alembic upgrade head
+../.venv/bin/python -m app.cli sync-reference  # изменения content/ (например, новый препарат) — и в существующую базу
 if [[ ! -f "$VAR/demo-seeded" ]]; then
   ../.venv/bin/python -m app.cli seed-demo && touch "$VAR/demo-seeded"
   echo "Пароль демо-врача — MC_DEMO_DOCTOR_PASSWORD в var/dev-secrets.env"

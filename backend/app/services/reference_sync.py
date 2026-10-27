@@ -28,13 +28,15 @@ def sync_reference_tables(db: Session, content: Content) -> None:
         db,
         Substance,
         [
-            {"id": d.id, "inn": d.inn, "group_label": d.group, "classes": d.classes, "in_formulary": True,
+            {"id": d.id, "inn": d.inn, "trade_names": d.trade_names, "group_label": d.group, "classes": d.classes,
+             "in_formulary": True,
              "default_missed_dose_rule": None, "default_missed_dose_hours": None,
              "instruction": {"demo_notes": d.demo_notes} if d.demo_notes else None, "source": content.drugs.source}
             for d in content.drugs.drugs
         ]
         + [
-            {"id": s.id, "inn": s.name, "group_label": s.category, "classes": s.classes, "in_formulary": False,
+            {"id": s.id, "inn": s.name, "trade_names": [], "group_label": s.category, "classes": s.classes,
+             "in_formulary": False,
              "default_missed_dose_rule": None, "default_missed_dose_hours": None, "instruction": None,
              "source": content.interactions.source}
             for s in content.interactions.substances

@@ -355,6 +355,7 @@ class AlarmingSymptoms(_Strict):
 class DrugDef(_Strict):
     id: str
     inn: str
+    trade_names: list[str] = []  # подсказка врачу в форме назначения
     group: str
     classes: list[str]
     demo_notes: str | None

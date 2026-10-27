@@ -124,7 +124,9 @@ def test_patient_sees_day_doses_in_own_timezone(api, client, doctor_headers, db,
 def test_formulary_lists_only_prescribable_drugs(api, client, doctor_headers):
     drugs = client.get("/api/v1/doctor/formulary", headers=doctor_headers).json()
     ids = [d["id"] for d in drugs]
-    assert "escitalopram" in ids and "phenazepam" in ids and len(ids) == 8
+    assert "escitalopram" in ids and "phenazepam" in ids and len(ids) == 9
+    aviandr = next(d for d in drugs if d["id"] == "maritupirdine")
+    assert (aviandr["inn"], aviandr["trade_names"]) == ("Маритупирдин", ["Авиандр"])
     assert "tramadol" not in ids and "alcohol" not in ids  # только для проверки взаимодействий
     assert [d["inn"] for d in drugs] == sorted(d["inn"] for d in drugs)
 
@@ -165,3 +167,16 @@ def test_prescribe_form_flow_change_dose_then_stop(api, client, doctor_headers):
     stopped = client.post(f"/api/v1/doctor/prescriptions/{pid}/stop", headers=doctor_headers, json={"reason": None})
     assert stopped.status_code == 200 and stopped.json()["stopped_at"] is not None
     assert client.get("/api/v1/me/plan", headers=patient).json() == []
+
+
+def test_doctor_can_prescribe_aviandr(api, client, doctor_headers):
+    card = api.patient_card(doctor_headers, "Анна Демо")
+    patient = bearer(api.register_patient(card["invite_code"], "+79004445571"))
+    created = client.post(f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions", headers=doctor_headers, json={
+        "substance_id": "maritupirdine", "trade_name": "Авиандр", "form": "таблетки", "dose": "20", "unit": "мг",
+        "times": ["09:00", "21:00"], "start_date": "2026-10-26", "in_person_visit_date": "2026-10-26",
+        "missed_dose_rule": "skip_no_double"})
+    assert created.status_code == 201, created.text
+    [item] = client.get("/api/v1/me/plan", headers=patient).json()
+    assert (item["inn"], item["trade_name"], item["current_dose"], item["times"]) == (
+        "Маритупирдин", "Авиандр", "20", ["09:00", "21:00"])

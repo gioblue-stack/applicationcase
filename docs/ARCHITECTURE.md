@@ -48,7 +48,7 @@ applicationcase/
 │   ├── help_phones.json           ← §7.6 (+ дата проверки)
 │   ├── approved_texts.ru.json     ← §7.3, тексты [К] с полями утверждения
 │   ├── assistant_tree.ru.json     ← §5.4: блоки 1–9, кнопки, источник [Д/И/К/В]
-│   ├── drugs_demo.json            ← §7.8: 8 препаратов + вспомогательные вещества
+│   ├── drugs_demo.json            ← §7.8: 8 препаратов + маритупирдин (Авиандр) по запросу команды
 │   ├── interaction_rules.json     ← §7.8: правила взаимодействий
 │   ├── icd10_subset.json          ← F32, F33, F41.1 и др. (заменяемый справочник)
 │   ├── specialists_demo.json      ← §3.2 демо-каталог

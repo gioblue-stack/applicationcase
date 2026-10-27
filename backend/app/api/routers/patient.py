@@ -23,13 +23,14 @@ from app.services import (
     diary,
     doses,
     messages,
+    panic,
     questionnaires,
     risk_protocol,
     safety_plan,
     side_effects,
     treatment,
 )
-from app.services.care import active_doctor_id
+from app.services.care import active_doctor_id, local_now
 
 router = APIRouter(prefix="/me", tags=["Пациент"])
 
@@ -39,6 +40,16 @@ def me(patient: CurrentPatient, db: DB) -> dict:
     return {"patient_id": patient.id, "full_name": patient.full_name,
             "has_doctor": active_doctor_id(db, patient.id) is not None,
             "takes_medication": patient.takes_medication, "region_code": patient.region_code}
+
+
+@router.get("/today")
+def today(patient: CurrentPatient, db: DB, now: Now, content: ContentDep) -> dict:
+    """Экран «Сегодня»: заполнен ли дневник, ждут ли опросники недели, нужен ли уточняющий блок."""
+    day = local_now(patient, now).date()
+    entry = diary.effective_entries(db, patient.id, day, day).get(day)
+    return {"day": day, "diary_entry_id": entry.id if entry else None,
+            "weekly": questionnaires.weekly_due(db, patient.id, now),
+            "risk_block_trigger": doses.due_treatment_change_block(db, patient_id=patient.id, now=now, content=content)}
 
 
 class SideEffectIn(BaseModel):
@@ -153,9 +164,28 @@ def alarming_symptom(body: AlarmingSymptomIn, patient: CurrentPatient, db: DB, n
     return result
 
 
+class PanicIn(BaseModel):
+    client_id: uuid.UUID
+    pressed_at: datetime
+
+
+@router.post("/panic-events", response_model=panic.PanicResult, status_code=status.HTTP_201_CREATED)
+def press_panic(body: PanicIn, patient: CurrentPatient, db: DB, now: Now, content: ContentDep):
+    """«Мне сейчас очень плохо»: экран помощи на устройстве уже открыт, здесь — сигнал врачу."""
+    result = panic.press_panic(db, patient=patient, client_id=body.client_id, pressed_at=body.pressed_at, now=now,
+                               content=content)
+    db.commit()
+    return result
+
+
 @router.get("/plan", response_model=list[treatment.PlanItem])
 def plan(patient: CurrentPatient, db: DB, now: Now, content: ContentDep):
     return treatment.patient_plan(db, patient.id, now, content)
+
+
+@router.get("/doses", response_model=list[doses.DoseView])
+def day_doses(day: date, patient: CurrentPatient, db: DB, content: ContentDep):
+    return doses.doses_for_day(db, patient_id=patient.id, day=day, content=content)
 
 
 class DoseAnswerIn(BaseModel):

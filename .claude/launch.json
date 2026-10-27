@@ -12,6 +12,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "apps/web-doctor", "run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "patient",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "apps/web-patient", "run", "dev"],
+      "port": 3001
     }
   ]
 }

@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -127,6 +127,21 @@ def _open_slot(db: Session, patient_id: uuid.UUID, today) -> QuestionnaireSchedu
         .order_by(QuestionnaireSchedule.due_date.desc())
         .limit(1)
     )
+
+
+@dataclass(frozen=True)
+class WeeklyDue:
+    due_date: date
+    pending: list[InstrumentCode]  # что ещё не заполнено в этом слоте, по порядку показа
+
+
+def weekly_due(db: Session, patient_id: uuid.UUID, now: datetime) -> WeeklyDue | None:
+    """Открытый еженедельный слот: PHQ-9 и GAD-7, которые пациент ещё не заполнил."""
+    slot = _open_slot(db, patient_id, local_now(get_patient(db, patient_id), now).date())
+    if slot is None:
+        return None
+    done = set(db.scalars(select(QuestionnaireSubmission.instrument).where(QuestionnaireSubmission.schedule_id == slot.id)))
+    return WeeklyDue(slot.due_date, [i for i in InstrumentCode if i not in done])
 
 
 def _close_slot_if_complete(db: Session, slot: QuestionnaireSchedule, now: datetime) -> None:

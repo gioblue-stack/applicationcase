@@ -102,3 +102,20 @@ def test_other_doctor_cannot_touch_prescription(api, client, doctor_headers, db)
     for action, body in (("shift", {"days": 3}), ("stop", {}), ("dose-change", {"effective_date": "2026-11-01", "dose": "5"})):
         assert client.post(f"/api/v1/doctor/prescriptions/{prescription['id']}/{action}", headers=other,
                            json=body).status_code == 404
+
+
+def test_patient_sees_day_doses_in_own_timezone(api, client, doctor_headers, db, clock):
+    card = api.patient_card(doctor_headers, "Игорь Демо")
+    client.post(f"/api/v1/doctor/patients/{card['patient_id']}/prescriptions", headers=doctor_headers,
+                json=PRESCRIPTION)
+    headers = bearer(api.register_patient(card["invite_code"], "+79004445567"))
+    run_dose_schedule(db, now=clock.now - timedelta(hours=10), content=load_content())
+
+    doses = client.get("/api/v1/me/doses", params={"day": "2026-10-26"}, headers=headers).json()
+    assert [(d["local_time"], d["inn"], d["dose"], d["status"], d["answerable"]) for d in doses] == [
+        ("09:00", "Эсциталопрам", "10", "pending", True), ("21:00", "Эсциталопрам", "10", "pending", True)]
+    client.post(f"/api/v1/me/doses/{doses[0]['id']}/response", headers=headers, json={"response": "taken"})
+    assert client.get("/api/v1/me/doses", params={"day": "2026-10-26"}, headers=headers).json()[0]["status"] == "taken"
+
+    stranger = bearer(api.register_self("+79004445568"))
+    assert client.get("/api/v1/me/doses", params={"day": "2026-10-26"}, headers=stranger).json() == []

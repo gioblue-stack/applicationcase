@@ -4,6 +4,8 @@ import uuid
 
 import pytest
 
+from app.content.loader import load_content
+from app.services.weekly_schedule import run_weekly_schedule
 from tests.api.conftest import bearer
 
 SUBMITTED = "2026-10-26T15:00:00+03:00"
@@ -112,3 +114,55 @@ def test_bootstrap_content_is_public_and_has_no_doctor_only_data(client):
     for doctor_only in ("severity_bands_doctor_only", "doctor_meaning", "Серотониновый синдром", "Умеренно тяжёлая"):
         assert doctor_only not in text
     assert response.json()["disclaimer"] == "Прототип. Не предназначен для диагностики и лечения. Все данные демонстрационные."
+
+
+def test_panic_button_raises_one_red_flag_and_returns_help_screen(client, maria, doctor_headers):
+    _, headers = maria
+    client_id = str(uuid.uuid4())
+    first = client.post("/api/v1/me/panic-events", headers=headers,
+                        json={"client_id": client_id, "pressed_at": SUBMITTED})
+    assert first.status_code == 201
+    body = first.json()
+    assert (body["created"], body["flag_raised"], body["screen"]["key"]) == (True, True, "help")
+    assert body["screen"]["phones"][0]["id"] == "112"
+
+    # Повтор из оффлайн-очереди — то же событие; новое нажатие при открытом флаге — без второго флага.
+    again = client.post("/api/v1/me/panic-events", headers=headers,
+                        json={"client_id": client_id, "pressed_at": SUBMITTED}).json()
+    assert (again["event_id"], again["created"]) == (body["event_id"], False)
+    second = client.post("/api/v1/me/panic-events", headers=headers,
+                         json={"client_id": str(uuid.uuid4()), "pressed_at": SUBMITTED}).json()
+    assert (second["created"], second["flag_raised"]) == (True, False)
+
+    [item] = client.get("/api/v1/doctor/patients", headers=doctor_headers).json()
+    assert item["color"] == "red"
+    assert [f["reason"] for f in item["open_flags"]] == ["panic_button"]
+
+
+def test_panic_button_without_doctor_shows_self_user_help(api, client):
+    headers = bearer(api.register_self("+79007778899"))
+    body = client.post("/api/v1/me/panic-events", headers=headers,
+                       json={"client_id": str(uuid.uuid4()), "pressed_at": SUBMITTED}).json()
+    assert (body["flag_raised"], body["screen"]["key"]) == (False, "self_user_help")
+
+
+def test_today_shows_diary_and_pending_weekly_questionnaires(client, maria, db, clock):
+    _, headers = maria
+    today = client.get("/api/v1/me/today", headers=headers).json()
+    assert (today["day"], today["diary_entry_id"], today["weekly"]) == ("2026-10-26", None, None)
+
+    run_weekly_schedule(db, now=clock.now, content=load_content())  # первый опросник — в день подключения
+    db.commit()
+    assert client.get("/api/v1/me/today", headers=headers).json()["weekly"] == {
+        "due_date": "2026-10-26", "pending": ["PHQ9", "GAD7"]}
+
+    client.post("/api/v1/me/questionnaires", headers=headers, json={
+        "client_id": str(uuid.uuid4()), "instrument": "PHQ9", "answers": [0] * 9, "client_submitted_at": SUBMITTED})
+    entry = client.post("/api/v1/me/diary", headers=headers, json={
+        "client_id": str(uuid.uuid4()), "day": "2026-10-26", "client_submitted_at": SUBMITTED, "mood": 6}).json()
+    today = client.get("/api/v1/me/today", headers=headers).json()
+    assert (today["diary_entry_id"], today["weekly"]["pending"]) == (entry["entry_id"], ["GAD7"])
+
+    client.post("/api/v1/me/questionnaires", headers=headers, json={
+        "client_id": str(uuid.uuid4()), "instrument": "GAD7", "answers": [0] * 7, "client_submitted_at": SUBMITTED})
+    assert client.get("/api/v1/me/today", headers=headers).json()["weekly"] is None

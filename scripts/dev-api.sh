@@ -42,4 +42,8 @@ if [[ ! -f "$VAR/demo-seeded" ]]; then
   ../.venv/bin/python -m app.cli seed-demo && touch "$VAR/demo-seeded"
   echo "Пароль демо-врача — MC_DEMO_DOCTOR_PASSWORD в var/dev-secrets.env"
 fi
-exec ../.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port "${PORT:-8000}"
+# Воркер создаёт приёмы лекарств и слоты еженедельных опросников — без него на экране «Сегодня» пусто.
+../.venv/bin/python -m app.cli worker &
+WORKER_PID=$!
+trap 'kill "$WORKER_PID" 2>/dev/null' EXIT
+../.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port "${PORT:-8000}"

@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
@@ -195,6 +196,40 @@ def respond_to_dose(
                  entity="dose_event", entity_id=event.id, patient_id=patient_id, meta={"status": status.value})
     db.flush()
     return DoseResponseResult(event.id, status, guidance, raised, offer)
+
+
+@dataclass(frozen=True)
+class DoseView:
+    id: uuid.UUID
+    scheduled_at: datetime
+    local_time: str  # «09:00» в таймзоне пациента
+    inn: str
+    trade_name: str | None
+    dose: str
+    unit: str
+    status: DoseStatus
+    answerable: bool  # «нет ответа» тоже можно отметить позже (В4)
+    snoozed_until: datetime | None
+
+
+def doses_for_day(db: Session, *, patient_id: uuid.UUID, day: date, content: Content) -> list[DoseView]:
+    """Приёмы за день пациента — экран «Сегодня», где их можно отметить и без push-напоминания."""
+    patient = get_patient(db, patient_id)
+    zone = ZoneInfo(patient.timezone)
+    start = datetime.combine(day, time.min, zone)
+    rows = db.execute(
+        select(DoseEvent, Prescription)
+        .join(Prescription, Prescription.id == DoseEvent.prescription_id)
+        .where(DoseEvent.patient_id == patient_id, DoseEvent.scheduled_at >= start,
+               DoseEvent.scheduled_at < start + timedelta(days=1))
+        .order_by(DoseEvent.scheduled_at)
+    ).all()
+    return [
+        DoseView(e.id, e.scheduled_at, e.scheduled_at.astimezone(zone).strftime("%H:%M"),
+                 content.drugs.by_id(p.substance_id).inn, p.trade_name, treatment.format_dose(e.planned_dose),
+                 p.unit, e.status, e.status in treatment.ANSWERABLE, e.snoozed_until)
+        for e, p in rows
+    ]
 
 
 def snooze_dose(db: Session, *, patient_id: uuid.UUID, dose_event_id: uuid.UUID, minutes: int, now: datetime,

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     content_dir: Path = REPO_ROOT / "content"
     # Вложения пациентов (блок 9) — зашифрованы ключом MC_DATA_KEY; каталог вне репозитория в production.
     upload_dir: Path = REPO_ROOT / "var" / "uploads"
+    # Только разработка: коды входа дописываются в этот файл, чтобы не искать их в логе сервера.
+    dev_codes_file: Path | None = None
 
     # Секреты задаются только через окружение; значений по умолчанию нет намеренно.
     jwt_secret: SecretStr | None = None

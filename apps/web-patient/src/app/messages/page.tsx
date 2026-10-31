@@ -84,6 +84,7 @@ export default function MessagesPage() {
           return (
             <li key={m.id}
                 className={`max-w-[85%] rounded-2xl px-4 py-2 ${mine ? "self-end bg-brand-600 text-white" : "self-start bg-white shadow-sm"}`}>
+              {!mine && <p className="mb-1 text-xs font-bold text-brand-700">{preface?.doctor_name ?? "Врач"}</p>}
               <p className="whitespace-pre-line">{m.body}</p>
               <p className={`mt-1 text-xs ${mine ? "text-brand-100" : "text-gray-400"}`}>{when(m.created_at)}</p>
             </li>

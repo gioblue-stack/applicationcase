@@ -4,6 +4,7 @@
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { DiaryCharts } from "@/components/DiaryCharts";
+import { DoctorChat } from "@/components/DoctorChat";
 import { Header } from "@/components/Header";
 import { PrescribeForm, PrescriptionActions } from "@/components/PrescribeForm";
 import { ScoresChart } from "@/components/ScoresChart";
@@ -119,6 +120,10 @@ export default function PatientCardPage() {
                       onClick={() => act(`doctor/flags/${f.flag_id}/acknowledge`)}>Взять в работу</button>
             </div>
           ))}
+        </Section>
+
+        <Section title="Сообщения">
+          <DoctorChat patientId={id} />
         </Section>
 
         <Section title="Лечение">

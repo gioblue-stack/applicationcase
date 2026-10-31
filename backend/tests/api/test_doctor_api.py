@@ -206,3 +206,29 @@ def test_patient_sees_next_dose_for_drugs_without_doses_today(api, client, docto
     client.post(f"/api/v1/doctor/prescriptions/{later['id']}/stop", headers=doctor_headers, json={})
     nxt = client.get("/api/v1/me/doses/next", params={"day": "2026-10-26"}, headers=patient).json()
     assert [d["inn"] for d in nxt] == ["Маритупирдин"]
+
+
+def test_doctor_can_write_first_and_patient_sees_it(api, client, doctor_headers, db):
+    card = api.patient_card(doctor_headers, "Анна Демо")
+    patient = bearer(api.register_patient(card["invite_code"], "+79004445573"))
+    url = f"/api/v1/doctor/patients/{card['patient_id']}/messages"
+
+    sent = client.post(url, headers=doctor_headers, json={"body": "Как переносите новую дозу?"})
+    assert sent.status_code == 201 and sent.json()["direction"] == "doctor_to_patient"
+    [msg] = client.get("/api/v1/me/messages", headers=patient).json()
+    assert (msg["direction"], msg["body"]) == ("doctor_to_patient", "Как переносите новую дозу?")
+
+    # Ответ пациента появляется у врача новым, после открытия переписки — прочитанным.
+    client.post("/api/v1/me/messages", headers=patient, json={
+        "client_id": str(uuid.uuid4()), "origin": "block7_question", "body": "Хорошо, спасибо"})
+    assert [m["patient_name"] for m in client.get("/api/v1/doctor/messages?status=new", headers=doctor_headers).json()] \
+        == ["Анна Демо"]
+    thread = client.get(url, headers=doctor_headers).json()
+    assert [m["direction"] for m in thread] == ["doctor_to_patient", "patient_to_doctor"]
+    assert client.get("/api/v1/doctor/messages?status=new", headers=doctor_headers).json() == []
+
+    assert client.post(url, headers=doctor_headers, json={"body": "   "}).status_code == 422
+    create_doctor(db, email="petrov2@demo.test", password="another long password", full_name="Петров Пётр",
+                  specialty="психотерапевт")
+    other = bearer(api.doctor_tokens("petrov2@demo.test", "another long password"))
+    assert client.post(url, headers=other, json={"body": "Здравствуйте"}).status_code == 404

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Mascot from "@/components/Mascot";
 import { ErrorText, PrimaryButton } from "@/components/Shell";
 import { useContent } from "@/lib/content";
@@ -15,6 +15,46 @@ async function post(path: string, body: unknown) {
     throw new Error(typeof detail === "string" ? detail : "Проверьте данные и попробуйте ещё раз");
   }
   return data;
+}
+
+type DemoPatient = { key: string; full_name: string; scenario: string };
+
+/** ВРЕМЕННО, для презентации: видно, только пока на API включён MC_DEMO_LOGIN. */
+function DemoPatients({ onError }: { onError: (message: string) => void }) {
+  const [patients, setPatients] = useState<DemoPatient[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/demo").then((r) => r.json()).then((d) => setPatients(d.enabled ? d.patients : [])).catch(() => null);
+  }, []);
+
+  async function enter(who: string) {
+    setBusy(true);
+    try {
+      await post("/api/auth/demo", { who });
+      window.location.href = "/";
+    } catch (err) {
+      onError((err as Error).message);
+      setBusy(false);
+    }
+  }
+
+  if (patients.length === 0) return null;
+  return (
+    <section className="mt-6 rounded-2xl border-2 border-dashed border-brand-200 bg-white p-4">
+      <p className="font-bold text-brand-800">Посмотреть без регистрации</p>
+      <p className="text-xs text-gray-500">Демо-режим для презентации: вход за демо-пациента без кода.</p>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {patients.map((p) => (
+          <button key={p.key} disabled={busy} onClick={() => enter(p.key)}
+                  className="rounded-xl bg-brand-50 px-3 py-2 text-left disabled:opacity-50">
+            <span className="block font-semibold text-brand-900">{p.full_name.split(" ")[0]}</span>
+            <span className="block text-xs text-brand-900/70">{p.scenario}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export default function LoginPage() {
@@ -117,6 +157,7 @@ export default function LoginPage() {
         </form>
       )}
 
+      {step === "login" && <DemoPatients onError={setError} />}
       {content && <p className="mt-6 text-center text-xs text-gray-500">{content.disclaimer}</p>}
       <Link href="/help" className="mt-auto block rounded-xl bg-red-600 btn-3d-red py-3 text-center font-semibold text-white">
         Мне сейчас очень плохо

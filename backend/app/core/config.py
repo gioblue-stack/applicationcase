@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     upload_dir: Path = REPO_ROOT / "var" / "uploads"
     # Только разработка: коды входа дописываются в этот файл, чтобы не искать их в логе сервера.
     dev_codes_file: Path | None = None
+    # ВРЕМЕННО, для презентации: кнопки «Демо» входят за демо-врача и демо-пациентов без кода и пароля.
+    # По умолчанию выключено; после показа — MC_DEMO_LOGIN=false (или удалить app/services/demo_login.py).
+    demo_login: bool = False
 
     # Секреты задаются только через окружение; значений по умолчанию нет намеренно.
     jwt_secret: SecretStr | None = None

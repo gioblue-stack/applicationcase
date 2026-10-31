@@ -25,6 +25,8 @@ export MC_ENV=development
 export MC_DATABASE_URL="postgresql+psycopg://mindcare@127.0.0.1:${PG_PORT}/mindcare"
 export MC_UPLOAD_DIR="$VAR/uploads"
 export MC_DEV_CODES_FILE="$VAR/dev-login-codes.txt"  # коды входа: письма и SMS в разработке не отправляются
+# ВРЕМЕННО, для презентации: кнопки «Демо» на страницах входа. Выключить: MC_DEMO_LOGIN=false ./scripts/dev-api.sh
+export MC_DEMO_LOGIN="${MC_DEMO_LOGIN:-true}"
 
 if [[ ! -d "$VAR/pg/data" ]]; then
   "$PG_BIN/initdb" -D "$VAR/pg/data" -U mindcare -A trust -E UTF8 --locale=C > /dev/null

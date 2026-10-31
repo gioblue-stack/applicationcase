@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.api.deps import DB, AppSettings, ContentDep, Now, get_code_sender
-from app.services import auth
+from app.services import auth, demo_login
 from app.services.auth import AuthError, MfaChallenge, TokenPair, TotpSetup
 from app.services.code_sender import CodeSender
 
@@ -112,6 +112,25 @@ def doctor_totp_setup(body: MfaToken, db: DB, now: Now, settings: AppSettings):
 def doctor_mfa(body: MfaCode, request: Request, db: DB, now: Now, settings: AppSettings):
     return _run(db, lambda: auth.complete_doctor_mfa(db, mfa_token=body.mfa_token, code=body.code, now=now,
                                                      settings=settings, user_agent=request.headers.get("user-agent")))
+
+
+# --- ВРЕМЕННО: демо-вход для презентации (MC_DEMO_LOGIN). Удалить вместе с services/demo_login.py ---------------
+
+
+@router.get("/demo", response_model=demo_login.DemoOptions)
+def demo_options(db: DB, settings: AppSettings):
+    """Какие кнопки «Демо» показать. 404 — демо-вход выключен, кнопок нет."""
+    return demo_login.options(db, settings)
+
+
+class DemoLoginIn(BaseModel):
+    who: str = Field(max_length=16, description="doctor | anna | igor | maria | oleg")
+
+
+@router.post("/demo/login", response_model=TokenPair)
+def demo_login_route(body: DemoLoginIn, request: Request, db: DB, now: Now, settings: AppSettings):
+    return _run(db, lambda: demo_login.login(db, who=body.who, now=now, settings=settings,
+                                             user_agent=request.headers.get("user-agent")))
 
 
 @router.post("/refresh", response_model=TokenPair)

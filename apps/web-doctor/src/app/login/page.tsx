@@ -1,6 +1,6 @@
 "use client";
 // Вход врача: пароль → код из приложения-аутентификатора (обязательно, §5.2). При первом входе — настройка TOTP.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Step = "password" | "setup" | "code";
 
@@ -83,6 +83,37 @@ export default function LoginPage() {
         </form>
       )}
       {error && <p className="mt-3 text-sm text-red-700" role="alert">{error}</p>}
+      {step === "password" && <DemoLogin onError={setError} />}
     </main>
+  );
+}
+
+/** ВРЕМЕННО, для презентации: видно, только пока на API включён MC_DEMO_LOGIN. */
+function DemoLogin({ onError }: { onError: (message: string) => void }) {
+  const [enabled, setEnabled] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/demo").then((r) => r.json()).then((d) => setEnabled(Boolean(d.enabled))).catch(() => null);
+  }, []);
+
+  if (!enabled) return null;
+  return (
+    <div className="mt-6 border-t pt-4">
+      <p className="mb-2 text-xs text-slate-500">Демо-режим для презентации: вход за демо-врача без пароля.</p>
+      <button disabled={busy} className="w-full rounded border border-slate-800 py-2 text-slate-800 disabled:opacity-50"
+              onClick={async () => {
+                setBusy(true);
+                try {
+                  await post("/api/auth/demo");
+                  window.location.href = "/";
+                } catch (e) {
+                  onError((e as Error).message);
+                  setBusy(false);
+                }
+              }}>
+        Войти как демо-врач
+      </button>
+    </div>
   );
 }

@@ -59,6 +59,7 @@ from app.models import (
     QuestionnaireSubmission,
     SafetyPlan,
     SideEffectReport,
+    StressAssessment,
 )
 from app.services.assistant import add_other_medication
 from app.services.auth import create_doctor
@@ -66,6 +67,7 @@ from app.services.doses import planned, respond_to_dose, steps_of
 from app.services.questionnaires import submit_weekly
 from app.services.reference_sync import sync_reference_tables
 from app.services.risk_protocol import record_risk_assessment
+from app.services.stress import submit as submit_stress
 from app.services.treatment import PrescriptionSpec, create_prescription
 
 TZ = ZoneInfo("Europe/Moscow")
@@ -336,6 +338,28 @@ def _seed_oleg(s: _Seeder) -> DemoPerson:
                       "Самопроверка вживую: PHQ-9 = 12, GAD-7 = 7 → рекомендация и каталог")
 
 
+# Внешние факторы стресса (опросник первого входа). Анна не отвечала — на ней показывают первый вход.
+DEMO_STRESS = {
+    "Игорь Демо": ({"work_stress": 2, "finances": 2, "family_conflict": 1, "own_illness": 0, "loneliness": 0},
+                   "Сокращения на работе, кредит за квартиру"),
+    "Мария Демо": ({"partner": 2, "loneliness": 2, "bereavement": 1, "work_stress": 1, "finances": 0},
+                   "Весной умерла бабушка, недавно рассталась с молодым человеком"),
+}
+
+
+def seed_demo_stress(db: Session, *, now: datetime, content: Content) -> int:
+    """Идемпотентно: и при первой загрузке, и в уже заполненной базе (опросник появился позже демо-данных)."""
+    added = 0
+    for name, (answers, other) in DEMO_STRESS.items():
+        patient = db.scalar(select(PatientProfile).where(PatientProfile.full_name == name))
+        if patient is None or db.scalar(select(StressAssessment.id).where(StressAssessment.patient_id == patient.id)):
+            continue
+        submit_stress(db, patient=patient, client_id=uuid.uuid4(), answers=answers, other_text=other,
+                      now=now - timedelta(days=20), content=content)
+        added += 1
+    return added
+
+
 def seed_demo(db: Session, *, now: datetime, content: Content, doctor_password: str, rng_seed: int = 713) -> DemoSummary:
     if db.scalar(select(Account.id).where(Account.email == DEMO_DOCTOR_EMAIL)) is not None:
         raise DemoAlreadySeeded("Демо-данные уже загружены — пересоздайте базу, чтобы загрузить заново")
@@ -346,6 +370,7 @@ def seed_demo(db: Session, *, now: datetime, content: Content, doctor_password: 
     doctor.response_time_hours = 24
     seeder = _Seeder(db, now, content, random.Random(rng_seed), doctor)
     people = [_seed_anna(seeder), _seed_igor(seeder), _seed_maria(seeder), _seed_oleg(seeder)]
+    seed_demo_stress(db, now=now, content=content)
     # Напоминания, «запланированные» в прошлом истории, не должны прийти пациентам при первом запуске воркера.
     db.execute(update(Notification)
                .where(Notification.status == NotificationStatus.SCHEDULED,

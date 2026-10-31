@@ -101,6 +101,7 @@ class FlagReason(StrEnum):
     LOW_MOOD_STREAK = "low_mood_streak"
     NEW_SIDE_EFFECT = "new_side_effect"
     NO_DATA = "no_data"
+    STRESS_SAFETY = "stress_safety"  # в опроснике о факторах стресса отмечены угрозы или насилие
 
 
 class PushPriority(StrEnum):

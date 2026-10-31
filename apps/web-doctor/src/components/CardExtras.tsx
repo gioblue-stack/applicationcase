@@ -1,9 +1,10 @@
 "use client";
-// Разделы карточки: факторы риска (§4.6, заполняет врач), история изменений схемы, вопросы ассистенту (§1.4).
+// Разделы карточки: факторы риска (§4.6, заполняет врач), история изменений схемы, вопросы ассистенту (§1.4),
+// внешние факторы стресса (заполняет пациент при первом входе).
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client";
 import { formatDateTime } from "@/lib/labels";
-import type { AssistantHistory, RegimenChange, RiskFactors } from "@/lib/types";
+import type { AssistantHistory, RegimenChange, RiskFactors, StressView } from "@/lib/types";
 
 const FACTORS: { key: keyof RiskFactors; label: string }[] = [
   { key: "prior_suicide_attempt", label: "Суицидальная попытка в прошлом" },
@@ -118,6 +119,48 @@ export function AssistantLog({ patientId }: { patientId: string }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+const STRESS_TONE: Record<number, string> = { 2: "bg-red-50 text-red-900", 1: "bg-amber-50 text-amber-900" };
+
+/** Внешние факторы стресса: отмеченные — сверху («сильно» → «немного»), остальные свёрнуты. */
+export function StressFactors({ patientId }: { patientId: string }) {
+  const [view, setView] = useState<StressView | null | undefined>(undefined);
+  useEffect(() => {
+    api<StressView | null>(`doctor/patients/${patientId}/stress-factors`).then(setView).catch(() => setView(null));
+  }, [patientId]);
+
+  if (view === undefined) return null;
+  if (view === null) return <p className="text-sm text-slate-500">Пациент ещё не отвечал — опросник откроется у него при первом входе.</p>;
+  const present = view.answers.filter((a) => (a.value ?? 0) > 0);
+  const rest = view.answers.filter((a) => !a.value);
+  return (
+    <div className="space-y-2 rounded border bg-white p-3 text-sm">
+      <p className="text-slate-600">
+        {formatDateTime(view.submitted_at)} · отмечено {view.present_count}, из них сильно влияет — {view.strong_count}.
+        Это не шкала: баллов и порогов нет.
+      </p>
+      {present.length === 0 && <p>Пациент не отметил внешних факторов стресса.</p>}
+      <ul className="space-y-1">
+        {present.map((a) => (
+          <li key={a.id} className={`flex flex-wrap gap-2 rounded px-2 py-1 ${STRESS_TONE[a.value ?? 0]}`}>
+            <span className="flex-1">{a.text}</span>
+            <span className="text-xs">{a.group}{a.icd && ` · ${a.icd}`}</span>
+            <b className="text-xs">{a.value === 2 ? "сильно" : "немного"}</b>
+          </li>
+        ))}
+      </ul>
+      {view.other_text && <p><b>Сам(а) добавил(а):</b> {view.other_text}</p>}
+      {rest.length > 0 && (
+        <details>
+          <summary className="cursor-pointer text-slate-500">Не отмечено ({rest.length})</summary>
+          <ul className="ml-4 list-disc text-slate-600">
+            {rest.map((a) => <li key={a.id}>{a.text} — {a.label.toLowerCase()}</li>)}
+          </ul>
+        </details>
+      )}
     </div>
   );
 }

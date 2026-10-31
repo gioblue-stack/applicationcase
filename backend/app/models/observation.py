@@ -222,6 +222,19 @@ class SafetyPlan(UUIDPk, CreatedAt, Base):
     doctor_reviewed_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
 
 
+class StressAssessment(UUIDPk, Base):
+    """Внешние факторы стресса (при первом входе, можно обновить). Каждое заполнение — новая запись, не правится."""
+
+    __tablename__ = "stress_assessment"
+
+    patient_id: Mapped[uuid.UUID] = mapped_column(sa.ForeignKey(PATIENT_FK), index=True)
+    client_id: Mapped[uuid.UUID] = mapped_column(unique=True)  # повторная отправка с телефона — без дубля
+    instrument_version: Mapped[int]
+    answers: Mapped[dict] = mapped_column(JSONB)  # {id фактора: 0 | 1 | 2}; пропущенный вопрос — ключа нет
+    other_text: Mapped[str | None] = mapped_column(sa.Text)
+    submitted_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True))
+
+
 class SideEffectReport(UUIDPk, Base):
     """Журнал побочных эффектов (§1.1)."""
 

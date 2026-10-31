@@ -532,6 +532,45 @@ class InteractionRules(_Strict):
     rules: list[InteractionRuleDef]
 
 
+class StressItem(_Strict):
+    id: str
+    group: str
+    text: str
+    icd: str | None = None  # группа психосоциальных факторов МКБ-10 — подсказка врачу
+    safety: bool = False  # «есть» → жёлтый флаг врачу и совет пациенту
+
+
+class StressFactorsDef(_Strict):
+    """Внешние факторы стресса при первом входе: ответы видит врач, баллов и порогов нет."""
+
+    source: str
+    approval: Approval
+    version: int
+    title: str
+    intro: str
+    options: list[Option]
+    groups: dict[str, str]
+    items: list[StressItem]
+    other_prompt: str
+    safety_text: str
+    outro: str
+
+    @model_validator(mode="after")
+    def _consistent(self) -> StressFactorsDef:
+        ids = [i.id for i in self.items]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Повторяются id факторов стресса")
+        unknown = {i.group for i in self.items} - set(self.groups)
+        if unknown:
+            raise ValueError(f"Неизвестные группы факторов стресса: {sorted(unknown)}")
+        if [o.value for o in self.options] != [0, 1, 2]:
+            raise ValueError("Варианты ответа: 0 — нет, 1 — влияет немного, 2 — влияет сильно")
+        return self
+
+    def item(self, item_id: str) -> StressItem | None:
+        return next((i for i in self.items if i.id == item_id), None)
+
+
 class Content(_Strict):
     phq9: InstrumentDef
     gad7: InstrumentDef
@@ -549,6 +588,7 @@ class Content(_Strict):
     assistant: AssistantTree
     approved_texts: ApprovedTexts
     interactions: InteractionRules
+    stress_factors: StressFactorsDef
 
     @model_validator(mode="after")
     def _cross_references(self) -> Content:

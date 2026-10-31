@@ -29,6 +29,7 @@ def bootstrap(content: ContentDep, response: Response) -> dict:
             "PHQ9": content.phq9.model_dump(mode="json", exclude=_INSTRUMENT_PUBLIC),
             "GAD7": content.gad7.model_dump(mode="json", exclude=_INSTRUMENT_PUBLIC),
             "DIARY": content.diary.model_dump(mode="json"),
+            "STRESS": content.stress_factors.model_dump(mode="json", exclude={"source", "approval"}),
         },
         "patient_texts": content.patient_texts.model_dump(mode="json"),
         "treatment_texts": content.treatment_texts.model_dump(mode="json"),

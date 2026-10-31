@@ -333,6 +333,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/stress-factors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Stress Factors
+         * @description Внешние факторы стресса: при первом входе, обновить можно из «Профиля». Ответы видит лечащий врач.
+         */
+        post: operations["submit_stress_factors_api_v1_me_stress_factors_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/alarming-symptoms": {
         parameters: {
             query?: never;
@@ -1162,6 +1182,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/doctor/patients/{patient_id}/stress-factors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stress Factors */
+        get: operations["stress_factors_api_v1_doctor_patients__patient_id__stress_factors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/doctor/patients/{patient_id}/assistant-history": {
         parameters: {
             query?: never;
@@ -1748,7 +1785,7 @@ export interface components {
          * FlagReason
          * @enum {string}
          */
-        FlagReason: "risk_block_emergency" | "risk_block_red" | "risk_block_dismissed" | "risk_block_yellow" | "panic_button" | "crisis_words" | "alarming_symptom" | "phq9_increase" | "gad7_increase" | "missed_doses" | "self_dose_change" | "low_mood_streak" | "new_side_effect" | "no_data";
+        FlagReason: "risk_block_emergency" | "risk_block_red" | "risk_block_dismissed" | "risk_block_yellow" | "panic_button" | "crisis_words" | "alarming_symptom" | "phq9_increase" | "gad7_increase" | "missed_doses" | "self_dose_change" | "low_mood_streak" | "new_side_effect" | "no_data" | "stress_safety";
         /**
          * FlagStatus
          * @enum {string}
@@ -2786,6 +2823,72 @@ export interface components {
             /** Reason */
             reason?: string | null;
         };
+        /** StressAnswerView */
+        StressAnswerView: {
+            /** Id */
+            id: string;
+            /** Group */
+            group: string;
+            /** Text */
+            text: string;
+            /** Icd */
+            icd: string | null;
+            /** Value */
+            value: number | null;
+            /** Label */
+            label: string;
+        };
+        /** StressIn */
+        StressIn: {
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /**
+             * Answers
+             * @description Пропущенный вопрос — без ключа
+             */
+            answers?: {
+                [key: string]: number;
+            };
+            /** Other Text */
+            other_text?: string | null;
+        };
+        /** StressResult */
+        StressResult: {
+            /**
+             * Assessment Id
+             * Format: uuid
+             */
+            assessment_id: string;
+            /** Created */
+            created: boolean;
+            /** Safety Text */
+            safety_text: string | null;
+            help_screen: components["schemas"]["HelpScreen"] | null;
+        };
+        /** StressView */
+        StressView: {
+            /**
+             * Assessment Id
+             * Format: uuid
+             */
+            assessment_id: string;
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at: string;
+            /** Answers */
+            answers: components["schemas"]["StressAnswerView"][];
+            /** Present Count */
+            present_count: number;
+            /** Strong Count */
+            strong_count: number;
+            /** Other Text */
+            other_text: string | null;
+        };
         /**
          * SubstanceIn
          * @description Вещество из базы (substance_id) или название, которого в базе нет (free_name).
@@ -3473,6 +3576,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RiskAssessmentResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_stress_factors_api_v1_me_stress_factors_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StressIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StressResult"];
                 };
             };
             /** @description Validation Error */
@@ -4994,6 +5130,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stress_factors_api_v1_doctor_patients__patient_id__stress_factors_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StressView"] | null;
                 };
             };
             /** @description Validation Error */

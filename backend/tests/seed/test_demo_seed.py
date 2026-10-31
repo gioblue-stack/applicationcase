@@ -20,8 +20,9 @@ from app.models import (
     QuestionnaireSubmission,
     RiskAssessment,
     SafetyPlan,
+    StressAssessment,
 )
-from app.seed.demo import LOGINS, DemoAlreadySeeded, seed_demo
+from app.seed.demo import LOGINS, DemoAlreadySeeded, seed_demo, seed_demo_stress
 from app.services.care import active_doctor_id
 from app.services.notifications import DevLogPushProvider
 from app.services.patients import doctor_queue
@@ -133,3 +134,10 @@ def test_worker_runs_cleanly_over_demo_data(db, demo):
     # Врач получил push о флагах Марии и Игоря — нейтральным текстом.
     sent = db.scalars(select(Notification).where(Notification.status == NotificationStatus.SENT)).all()
     assert {n.title for n in sent} >= {"Красный флаг", "Новая отметка"}
+
+
+def test_stress_factors_for_igor_and_maria_but_not_anna(db, demo):
+    names = {p.full_name for p in db.scalars(select(PatientProfile).join(
+        StressAssessment, StressAssessment.patient_id == PatientProfile.id))}
+    assert names == {"Игорь Демо", "Мария Демо"}  # на Анне показывают опросник первого входа
+    assert seed_demo_stress(db, now=NOW, content=load_content()) == 0  # повторный запуск ничего не дублирует

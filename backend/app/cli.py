@@ -1,4 +1,4 @@
-"""Командная строка: python -m app.cli seed-demo | sync-reference | worker [--once]"""
+"""Командная строка: python -m app.cli seed-demo | seed-demo-extras | sync-reference | worker [--once]"""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from app.content.loader import load_content
 from app.core.config import get_settings
 from app.core.security import utcnow
 from app.db.session import get_engine
-from app.seed.demo import DemoAlreadySeeded, seed_demo
+from app.seed.demo import DemoAlreadySeeded, seed_demo, seed_demo_stress
 from app.services.reference_sync import sync_reference_tables
 from app.services import push
 from app.worker import WorkerState, default_jobs, run_due_jobs, run_forever
@@ -41,6 +41,15 @@ def _seed(args: argparse.Namespace) -> None:
     for person in summary.people:
         print(f"{person.full_name:<12} {person.login}  {person.role.value:<9} {person.scenario}")
     print("\nПациенты входят по коду; в режиме разработки код пишется в лог API.")
+
+
+def _seed_extras(args: argparse.Namespace) -> None:
+    """Демо-данные новых разделов — в базу, где демо уже загружено (идемпотентно)."""
+    with sessionmaker(bind=get_engine())() as db:
+        added = seed_demo_stress(db, now=utcnow(), content=load_content())
+        db.commit()
+    if added:
+        print(f"Демо: факторы стресса добавлены для {added} пациентов")
 
 
 def _sync_reference(args: argparse.Namespace) -> None:
@@ -76,6 +85,8 @@ def main() -> None:
     seed = commands.add_parser("seed-demo", help="Загрузить демо-данные §7.13")
     seed.add_argument("--now", help="Момент «сейчас» для демо (ISO 8601), по умолчанию — текущее время")
     seed.set_defaults(func=_seed)
+    extras = commands.add_parser("seed-demo-extras", help="Дозагрузить демо-данные новых разделов в готовую базу")
+    extras.set_defaults(func=_seed_extras)
     sync = commands.add_parser("sync-reference", help="Обновить справочники (препараты, телефоны, МКБ) из content/")
     sync.set_defaults(func=_sync_reference)
     worker = commands.add_parser("worker", help="Фоновый воркер расписаний и уведомлений")

@@ -24,6 +24,7 @@ from app.models.observation import (
     RiskFactors,
     SafetyPlan,
     SideEffectReport,
+    StressAssessment,
 )
 from app.models.reference import (
     AlarmingSymptom,
@@ -99,6 +100,7 @@ __all__ = [
     "RiskFactors",
     "SafetyPlan",
     "SideEffectReport",
+    "StressAssessment",
     "SpecialistDemo",
     "Substance",
     "Threshold",

@@ -3,7 +3,7 @@
 // уточняющий блок, план безопасности. Каждый запрос врача пишется в журнал доступа на сервере.
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AssistantLog, RegimenHistory, RiskFactorsForm } from "@/components/CardExtras";
+import { AssistantLog, RegimenHistory, RiskFactorsForm, StressFactors } from "@/components/CardExtras";
 import { DiaryCharts } from "@/components/DiaryCharts";
 import { DoctorChat } from "@/components/DoctorChat";
 import { Header } from "@/components/Header";
@@ -122,6 +122,10 @@ export default function PatientCardPage() {
                       onClick={() => act(`doctor/flags/${f.flag_id}/acknowledge`)}>Взять в работу</button>
             </div>
           ))}
+        </Section>
+
+        <Section title="Внешние факторы стресса">
+          <StressFactors patientId={id} />
         </Section>
 
         <Section title="Сообщения">

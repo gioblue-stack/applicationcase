@@ -23,12 +23,13 @@ from app.services.attachments import AttachmentError, AttachmentNotFound
 from app.services.messages import MessageError, MessageNotFound
 from app.services.risk_protocol import RiskProtocolError
 from app.services.safety_plan import SafetyPlanError
+from app.services.stress import StressError
 from app.services.treatment import TreatmentError
 
 VALIDATION_ERRORS = (
     InvalidAnswers, InvalidDiary, InvalidQuestionnaire, InvalidRegimen, InvalidDoseResponse,
     RiskProtocolError, DiaryError, QuestionnaireError, TreatmentError, DoseError, FlagError, PatientCardError,
-    SafetyPlanError, MessageError, AttachmentError, AssistantError,
+    SafetyPlanError, MessageError, AttachmentError, AssistantError, StressError,
 )
 
 

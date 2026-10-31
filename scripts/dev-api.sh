@@ -58,6 +58,8 @@ cd "$ROOT/backend"
 if [[ ! -f "$VAR/demo-seeded" ]]; then
   ../.venv/bin/python -m app.cli seed-demo && touch "$VAR/demo-seeded"
   echo "Пароль демо-врача — MC_DEMO_DOCTOR_PASSWORD в var/dev-secrets.env"
+else
+  ../.venv/bin/python -m app.cli seed-demo-extras  # разделы, появившиеся после первой загрузки демо
 fi
 # Воркер создаёт приёмы лекарств и слоты еженедельных опросников — без него на экране «Сегодня» пусто.
 ../.venv/bin/python -m app.cli worker &

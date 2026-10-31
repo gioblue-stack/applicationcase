@@ -22,3 +22,4 @@ export type InviteCard = S["PatientCard"];
 export type RegimenChange = S["RegimenChangeOut"];
 export type AssistantHistory = S["AssistantHistory"];
 export type RiskFactors = S["RiskFactorsIn"];
+export type StressView = S["StressView"];

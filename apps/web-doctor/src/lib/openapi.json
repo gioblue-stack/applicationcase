@@ -747,6 +747,53 @@
     ]
    }
   },
+  "/api/v1/me/stress-factors": {
+   "post": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Submit Stress Factors",
+    "description": "Внешние факторы стресса: при первом входе, обновить можно из «Профиля». Ответы видит лечащий врач.",
+    "operationId": "submit_stress_factors_api_v1_me_stress_factors_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StressIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/StressResult"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
   "/api/v1/me/alarming-symptoms": {
    "get": {
     "tags": [
@@ -3107,6 +3154,62 @@
     }
    }
   },
+  "/api/v1/doctor/patients/{patient_id}/stress-factors": {
+   "get": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Stress Factors",
+    "operationId": "stress_factors_api_v1_doctor_patients__patient_id__stress_factors_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "patient_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Patient Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "anyOf": [
+          {
+           "$ref": "#/components/schemas/StressView"
+          },
+          {
+           "type": "null"
+          }
+         ],
+         "title": "Response Stress Factors Api V1 Doctor Patients  Patient Id  Stress Factors Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/doctor/patients/{patient_id}/assistant-history": {
    "get": {
     "tags": [
@@ -4743,7 +4846,8 @@
      "self_dose_change",
      "low_mood_streak",
      "new_side_effect",
-     "no_data"
+     "no_data",
+     "stress_safety"
     ],
     "title": "FlagReason"
    },
@@ -7519,6 +7623,185 @@
     },
     "type": "object",
     "title": "StopIn"
+   },
+   "StressAnswerView": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "group": {
+      "type": "string",
+      "title": "Group"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     },
+     "icd": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Icd"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "group",
+     "text",
+     "icd",
+     "value",
+     "label"
+    ],
+    "title": "StressAnswerView"
+   },
+   "StressIn": {
+    "properties": {
+     "client_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Client Id"
+     },
+     "answers": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "maxProperties": 50,
+      "title": "Answers",
+      "description": "Пропущенный вопрос — без ключа"
+     },
+     "other_text": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Other Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "client_id"
+    ],
+    "title": "StressIn"
+   },
+   "StressResult": {
+    "properties": {
+     "assessment_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Assessment Id"
+     },
+     "created": {
+      "type": "boolean",
+      "title": "Created"
+     },
+     "safety_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Safety Text"
+     },
+     "help_screen": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/HelpScreen"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "assessment_id",
+     "created",
+     "safety_text",
+     "help_screen"
+    ],
+    "title": "StressResult"
+   },
+   "StressView": {
+    "properties": {
+     "assessment_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Assessment Id"
+     },
+     "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Submitted At"
+     },
+     "answers": {
+      "items": {
+       "$ref": "#/components/schemas/StressAnswerView"
+      },
+      "type": "array",
+      "title": "Answers"
+     },
+     "present_count": {
+      "type": "integer",
+      "title": "Present Count"
+     },
+     "strong_count": {
+      "type": "integer",
+      "title": "Strong Count"
+     },
+     "other_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Other Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "assessment_id",
+     "submitted_at",
+     "answers",
+     "present_count",
+     "strong_count",
+     "other_text"
+    ],
+    "title": "StressView"
    },
    "SubstanceIn": {
     "properties": {

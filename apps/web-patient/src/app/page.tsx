@@ -2,16 +2,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Shell, { Card, ErrorText } from "@/components/Shell";
 import DoseRow from "@/components/DoseRow";
 import { MascotSays } from "@/components/Mascot";
 import { api } from "@/lib/client";
-import { saveHelpProfile } from "@/lib/local";
+import { readLocal, saveHelpProfile, writeLocal } from "@/lib/local";
 import { dayLabel } from "@/lib/dates";
 import type { Dose, Me, NextDose, SafetyPlan, Today } from "@/lib/types";
 
 const TITLES = { PHQ9: "PHQ-9", GAD7: "GAD-7" } as const;
+const STRESS_OFFERED = "mc_stress_offered"; // опросник о жизненной ситуации открывается сам только при первом заходе
 
 /** Реплика пингвина по тому, что осталось на сегодня. Без оценок самочувствия — только что сделать дальше. */
 function Greeting({ today }: { today: Today }) {
@@ -25,6 +27,7 @@ function Greeting({ today }: { today: Today }) {
 }
 
 export default function TodayPage() {
+  const router = useRouter();
   const [me, setMe] = useState<Me | null>(null);
   const [today, setToday] = useState<Today | null>(null);
   const [doses, setDoses] = useState<Dose[]>([]);
@@ -36,6 +39,11 @@ export default function TodayPage() {
       const [profile, day] = await Promise.all([api<Me>("me"), api<Today>("me/today")]);
       setMe(profile);
       setToday(day);
+      if (day.stress_check_due && !readLocal<boolean>(STRESS_OFFERED)) {
+        writeLocal(STRESS_OFFERED, true); // «Заполню позже» не возвращает сюда снова — дальше только карточка
+        router.push("/stress");
+        return;
+      }
       saveHelpProfile({ region: profile.region_code, hasDoctor: profile.has_doctor });
       if (profile.takes_medication) {
         const [list, upcoming] = await Promise.all([
@@ -51,7 +59,7 @@ export default function TodayPage() {
     } catch (e) {
       setError((e as Error).message);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     load();
@@ -70,6 +78,16 @@ export default function TodayPage() {
           <p className="mt-1 text-sm text-gray-600">PHQ-9 и GAD-7 — около 5 минут. Это скрининг, а не диагноз.</p>
           <Link href="/self-check" className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
             Пройти
+          </Link>
+        </Card>
+      )}
+
+      {today?.stress_check_due && (
+        <Card>
+          <p className="font-semibold">Что сейчас происходит в жизни</p>
+          <p className="mt-1 text-sm text-gray-600">2–3 минуты. Врач поймёт, что может влиять на самочувствие.</p>
+          <Link href="/stress" className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+            Ответить
           </Link>
         </Card>
       )}

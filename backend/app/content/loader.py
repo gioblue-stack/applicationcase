@@ -34,5 +34,6 @@ def load_content(content_dir: Path | None = None) -> Content:
             "assistant": _read(root / "assistant_tree.ru.json"),
             "approved_texts": _read(root / "approved_texts.ru.json"),
             "interactions": _read(root / "interaction_rules.json"),
+            "stress_factors": _read(root / "instruments" / "stress_factors.ru.v1.json"),
         }
     )

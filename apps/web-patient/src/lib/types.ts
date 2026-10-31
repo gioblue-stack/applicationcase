@@ -56,7 +56,7 @@ export type Bootstrap = {
     screens: Record<string, { text: string; fullscreen: boolean; actions: string[] }>;
     action_labels: Record<string, string>;
   };
-  instruments: { PHQ9: Instrument; GAD7: Instrument; DIARY: DiaryContent };
+  instruments: { PHQ9: Instrument; GAD7: Instrument; DIARY: DiaryContent; STRESS: StressContent };
 };
 
 export type Me = {
@@ -72,6 +72,7 @@ export type Today = {
   diary_entry_id: string | null;
   weekly: { due_date: string; pending: ("PHQ9" | "GAD7")[] } | null;
   risk_block_trigger: string | null;
+  stress_check_due: boolean;
 };
 
 export type Dose = {
@@ -178,3 +179,18 @@ export type SelfCheckResult = {
   screening_note: string;
   help_screen: HelpScreen | null;
 };
+
+/** Внешние факторы стресса: опросник первого входа, ответы видит врач. */
+export type StressContent = {
+  version: number;
+  title: string;
+  intro: string;
+  options: Option[];
+  groups: Record<string, string>;
+  items: { id: string; group: string; text: string }[];
+  other_prompt: string;
+  safety_text: string;
+  outro: string;
+};
+
+export type StressResult = { assessment_id: string; safety_text: string | null; help_screen: HelpScreen | null };

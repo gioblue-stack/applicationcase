@@ -29,6 +29,7 @@ from app.services import (
     risk_protocol,
     safety_plan,
     side_effects,
+    stress,
     treatment,
 )
 from app.services.care import active_doctor_id, local_now
@@ -50,7 +51,8 @@ def today(patient: CurrentPatient, db: DB, now: Now, content: ContentDep) -> dic
     entry = diary.effective_entries(db, patient.id, day, day).get(day)
     return {"day": day, "diary_entry_id": entry.id if entry else None,
             "weekly": questionnaires.weekly_due(db, patient.id, now),
-            "risk_block_trigger": doses.due_treatment_change_block(db, patient_id=patient.id, now=now, content=content)}
+            "risk_block_trigger": doses.due_treatment_change_block(db, patient_id=patient.id, now=now, content=content),
+            "stress_check_due": stress.due(db, patient)}
 
 
 class SideEffectIn(BaseModel):
@@ -148,6 +150,21 @@ def risk_assessment(body: RiskAssessmentIn, patient: CurrentPatient, db: DB, now
         db, patient_id=patient.id, client_id=body.client_id, trigger=body.trigger, trigger_ref=body.trigger_ref,
         answers=body.answers, started_at=body.started_at, client_submitted_at=body.client_submitted_at,
         now=now, content=content)
+    db.commit()
+    return result
+
+
+class StressIn(BaseModel):
+    client_id: uuid.UUID
+    answers: dict[str, StrictInt] = Field(default_factory=dict, max_length=50, description="Пропущенный вопрос — без ключа")
+    other_text: str | None = Field(None, max_length=500)
+
+
+@router.post("/stress-factors", response_model=stress.StressResult, status_code=status.HTTP_201_CREATED)
+def submit_stress_factors(body: StressIn, patient: CurrentPatient, db: DB, now: Now, content: ContentDep):
+    """Внешние факторы стресса: при первом входе, обновить можно из «Профиля». Ответы видит лечащий врач."""
+    result = stress.submit(db, patient=patient, client_id=body.client_id, answers=body.answers,
+                           other_text=body.other_text, now=now, content=content)
     db.commit()
     return result
 

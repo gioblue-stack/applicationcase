@@ -18,6 +18,7 @@ export const FLAG_REASON: Record<string, string> = {
   low_mood_streak: "Настроение ≤ 3 три дня подряд",
   new_side_effect: "Новый побочный эффект",
   no_data: "Нет данных 7 дней",
+  stress_safety: "Сообщил(а) об угрозах или насилии",
 };
 
 export const COLOR_LABEL: Record<string, string> = { red: "Красный", yellow: "Жёлтый", green: "Зелёный" };

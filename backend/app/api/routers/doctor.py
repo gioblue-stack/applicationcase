@@ -35,6 +35,7 @@ from app.services import (
     patients,
     push,
     safety_plan,
+    stress,
     treatment,
 )
 from app.services.doses import steps_of
@@ -402,6 +403,13 @@ def download_attachment(attachment_id: uuid.UUID, request: Request, doctor: Curr
     return Response(data, media_type=attachment.mime,
                     headers={"Content-Disposition": f'attachment; filename="{attachment.id}"',
                              "Cache-Control": "no-store"})
+
+
+@router.get("/patients/{patient_id}/stress-factors", response_model=stress.StressView | None)
+def stress_factors(patient: DoctorPatient, db: DB, content: ContentDep):
+    result = stress.view(db, patient.id, content)
+    db.commit()
+    return result
 
 
 @router.get("/patients/{patient_id}/assistant-history", response_model=assistant.AssistantHistory)

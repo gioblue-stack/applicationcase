@@ -1,6 +1,7 @@
 // Профиль: как добавить сайт на рабочий стол телефона и выход.
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import PushSettings from "@/components/PushSettings";
 import Shell, { Card } from "@/components/Shell";
@@ -30,6 +31,11 @@ export default function ProfilePage() {
           <p className="text-lg font-semibold">{me.full_name}</p>
           <p className="text-sm text-gray-600">{me.has_doctor ? "Подключены к лечащему врачу" : "Без лечащего врача"}</p>
         </Card>
+      )}
+      {me?.has_doctor && (
+        <Link href="/stress" className="mt-4 block rounded-2xl border-2 border-brand-100 bg-white p-4 font-semibold text-brand-800">
+          Что сейчас происходит в жизни — обновить ответы →
+        </Link>
       )}
       <PushSettings />
       {!standalone && (

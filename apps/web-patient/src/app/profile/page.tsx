@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PushSettings from "@/components/PushSettings";
 import Shell, { Card } from "@/components/Shell";
 import { api } from "@/lib/client";
 import { HELP_PROFILE, writeLocal } from "@/lib/local";
@@ -30,6 +31,7 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-600">{me.has_doctor ? "Подключены к лечащему врачу" : "Без лечащего врача"}</p>
         </Card>
       )}
+      <PushSettings />
       {!standalone && (
         <Card>
           <p className="font-semibold">Добавьте на экран телефона</p>

@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr | None = None
     data_key: SecretStr | None = None  # base64, 32 байта: шифрование TOTP-секретов врачей
     otp_pepper: SecretStr | None = None  # «перец» для хешей одноразовых кодов входа
+    # Web Push (напоминания на телефон): ключи VAPID. Без них уведомления только пишутся в лог.
+    vapid_private_key: SecretStr | None = None  # base64url, 32 байта P-256
+    vapid_public_key: str | None = None  # base64url, 65 байт (несжатая точка) — отдаётся браузеру
+    vapid_subject: str = "mailto:push@demo.mindcare.test"  # контакт для push-сервисов (Apple, Google, Mozilla)
 
     access_ttl_minutes: int = 15
     patient_refresh_ttl_days: int = 30

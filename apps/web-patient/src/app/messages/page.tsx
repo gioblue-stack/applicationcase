@@ -23,6 +23,13 @@ export default function MessagesPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const clientId = useRef(newId());
+  const [fromAssistant, setFromAssistant] = useState<{ id: string; label: string } | null>(null);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const id = q.get("ask");
+    if (id) setFromAssistant({ id, label: q.get("q") ?? "" });
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -44,9 +51,13 @@ export default function MessagesPage() {
     setError("");
     try {
       const r = await api<{ help_screen: HelpScreen | null }>("me/messages", {
-        method: "POST", body: { client_id: clientId.current, origin: "block7_question", body: text },
+        method: "POST",
+        body: fromAssistant
+          ? { client_id: clientId.current, origin: "still_ask_doctor", body: text, assistant_interaction_id: fromAssistant.id }
+          : { client_id: clientId.current, origin: "block7_question", body: text },
       });
       setText("");
+      setFromAssistant(null);
       clientId.current = newId();
       setHelp(r.help_screen); // кризисные слова → экран помощи сразу, врач получает красный флаг
       await load();
@@ -94,6 +105,11 @@ export default function MessagesPage() {
 
       <form onSubmit={send}>
         <Card>
+          {fromAssistant && (
+            <p className="mb-2 rounded-lg bg-brand-50 p-2 text-sm text-brand-900">
+              Вопрос к помощнику: «{fromAssistant.label}». Врач увидит его вместе с вашим сообщением.
+            </p>
+          )}
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} maxLength={2000} required
                     placeholder="Ваш вопрос врачу" className="w-full rounded-lg border border-gray-300 p-2" />
           <ErrorText>{error}</ErrorText>

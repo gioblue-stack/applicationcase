@@ -8,7 +8,7 @@ from decimal import Decimal
 
 from typing import Literal
 
-from fastapi import APIRouter, Response, UploadFile, status
+from fastapi import APIRouter, HTTPException, Response, UploadFile, status
 from pydantic import BaseModel, Field, StrictBool, StrictInt
 
 from app.api.deps import DB, AppSettings, ContentDep, CurrentPatient, Now
@@ -24,6 +24,7 @@ from app.services import (
     doses,
     messages,
     panic,
+    push,
     questionnaires,
     risk_protocol,
     safety_plan,
@@ -155,6 +156,12 @@ class AlarmingSymptomIn(BaseModel):
     code: str = Field(max_length=64)
 
 
+@router.get("/alarming-symptoms")
+def alarming_symptom_list(patient: CurrentPatient, content: ContentDep) -> list[dict]:
+    """Список для кнопки «Тревожный симптом» — только текст для пациента, без doctor_meaning."""
+    return [{"code": s.code, "label": s.patient_text} for s in content.alarming_symptoms.symptoms]
+
+
 @router.post("/alarming-symptoms", response_model=side_effects.AlarmingSymptomResult,
              status_code=status.HTTP_201_CREATED)
 def alarming_symptom(body: AlarmingSymptomIn, patient: CurrentPatient, db: DB, now: Now, content: ContentDep):
@@ -162,6 +169,54 @@ def alarming_symptom(body: AlarmingSymptomIn, patient: CurrentPatient, db: DB, n
                                                   content=content)
     db.commit()
     return result
+
+
+# --- Напоминания на телефон (Web Push) -------------------------------------------------------
+
+
+@router.get("/push")
+def push_status(patient: CurrentPatient, db: DB, settings: AppSettings) -> dict:
+    """Можно ли включить уведомления и сколько устройств пациента уже подписано."""
+    available = push.configured(settings)
+    return {"available": available, "public_key": settings.vapid_public_key if available else None,
+            "devices": push.subscriptions_count(db, patient.account_id)}
+
+
+class PushSubscriptionIn(BaseModel):
+    endpoint: str = Field(max_length=2048)
+    keys: dict[str, str] = Field(max_length=4)
+
+
+@router.post("/push/subscribe", status_code=status.HTTP_204_NO_CONTENT)
+def push_subscribe(body: PushSubscriptionIn, patient: CurrentPatient, db: DB, now: Now) -> Response:
+    try:
+        push.subscribe(db, account_id=patient.account_id, subscription=body.model_dump(), now=now)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+class PushEndpointIn(BaseModel):
+    endpoint: str = Field(max_length=2048)
+
+
+@router.post("/push/unsubscribe", status_code=status.HTTP_204_NO_CONTENT)
+def push_unsubscribe(body: PushEndpointIn, patient: CurrentPatient, db: DB) -> Response:
+    push.unsubscribe(db, account_id=patient.account_id, endpoint=body.endpoint)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/push/test")
+def push_test(patient: CurrentPatient, db: DB, settings: AppSettings) -> dict:
+    """Кнопка «Проверить»: уведомление приходит сразу, не через очередь."""
+    if not push.configured(settings):
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Уведомления на сервере не настроены")
+    delivered = push.WebPushProvider(settings).send_to_account(
+        db, patient.account_id, title="Проверка", body="Уведомления работают", url="/profile", tag="test")
+    db.commit()
+    return {"delivered": delivered}
 
 
 class PanicIn(BaseModel):
@@ -278,6 +333,11 @@ def assistant_answer(body: AssistantQuestionIn, patient: CurrentPatient, db: DB,
     result = assistant.answer(db, patient=patient, button_id=body.button_id, now=now, content=content)
     db.commit()
     return result
+
+
+@router.get("/assistant/substances")
+def assistant_substances(patient: CurrentPatient, content: ContentDep) -> list[dict]:
+    return assistant.substance_choices(content)
 
 
 class SubstanceIn(BaseModel):

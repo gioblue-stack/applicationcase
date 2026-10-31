@@ -18,7 +18,7 @@ from app.core.security import utcnow
 from app.db.session import get_engine
 from app.seed.demo import DemoAlreadySeeded, seed_demo
 from app.services.reference_sync import sync_reference_tables
-from app.services.notifications import DevLogPushProvider
+from app.services import push
 from app.worker import WorkerState, default_jobs, run_due_jobs, run_forever
 
 
@@ -56,7 +56,8 @@ def _worker(args: argparse.Namespace) -> None:
     settings = get_settings()
     if settings.env not in ("development", "test"):
         raise SystemExit("В production нужен push-провайдер (APNs/FCM/Web Push); сейчас подключён только лог")
-    jobs = default_jobs(load_content(), DevLogPushProvider())
+    # С ключами VAPID — настоящие уведомления на телефон (Web Push), без них — только лог.
+    jobs = default_jobs(load_content(), push.provider_for(settings))
     engine = get_engine()
     if args.once:
         sessions = sessionmaker(bind=engine, expire_on_commit=False)

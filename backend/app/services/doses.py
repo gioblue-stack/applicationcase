@@ -276,7 +276,7 @@ def next_doses_without_day(db: Session, *, patient_id: uuid.UUID, day: date, now
         local = at.astimezone(zone)
         result.append(NextDose(p.id, content.drugs.by_id(p.substance_id).inn, p.trade_name,
                                treatment.format_dose(dose), p.unit, at, local.date(), local.strftime("%H:%M")))
-    return result
+    return sorted(result, key=lambda n: n.scheduled_at)  # сначала самый близкий приём
 
 
 def snooze_dose(db: Session, *, patient_id: uuid.UUID, dose_event_id: uuid.UUID, minutes: int, now: datetime,

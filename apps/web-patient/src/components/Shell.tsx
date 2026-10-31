@@ -9,6 +9,7 @@ import { flushPanic } from "@/lib/local";
 const TABS = [
   { href: "/", label: "Сегодня" },
   { href: "/plan", label: "Лечение" },
+  { href: "/assistant", label: "Помощник" },
   { href: "/messages", label: "Врачу" },
   { href: "/profile", label: "Профиль" },
 ];
@@ -42,12 +43,12 @@ export default function Shell({ title, back, children }: { title: string; back?:
             Мне сейчас очень плохо
           </Link>
         </div>
-        <nav className="grid grid-cols-4">
+        <nav className="grid grid-cols-5">
           {TABS.map((tab) => {
             const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
             return (
               <Link key={tab.href} href={tab.href}
-                    className={`py-3 text-center text-sm font-bold ${active ? "text-brand-600" : "text-gray-400"}`}>
+                    className={`py-3 text-center text-xs font-bold sm:text-sm ${active ? "text-brand-600" : "text-gray-400"}`}>
                 {tab.label}
               </Link>
             );

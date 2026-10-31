@@ -40,7 +40,14 @@ export default function PlanPage() {
           </div>
         </Card>
       ))}
-      <Link href="/safety-plan" className="mt-4 block rounded-2xl bg-white p-4 font-semibold text-brand-800 shadow-sm">
+      <Link href="/assistant?q=alarming"
+            className="mt-4 block rounded-2xl bg-red-50 p-4 font-semibold text-red-800 ring-1 ring-red-200">
+        Сообщить о тревожном симптоме →
+      </Link>
+      <Link href="/assistant?q=new_drug" className="mt-3 block rounded-2xl bg-white p-4 font-semibold text-brand-800 shadow-sm">
+        Мне назначил препарат другой врач →
+      </Link>
+      <Link href="/safety-plan" className="mt-3 block rounded-2xl bg-white p-4 font-semibold text-brand-800 shadow-sm">
         Мой план безопасности →
       </Link>
     </Shell>

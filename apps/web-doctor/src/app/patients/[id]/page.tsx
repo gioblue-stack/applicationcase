@@ -2,7 +2,8 @@
 // Карточка пациента (§1.1–§1.3): сводка, флаги, графики, опросники, приверженность, побочные эффекты,
 // уточняющий блок, план безопасности. Каждый запрос врача пишется в журнал доступа на сервере.
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AssistantLog, RegimenHistory, RiskFactorsForm } from "@/components/CardExtras";
 import { DiaryCharts } from "@/components/DiaryCharts";
 import { DoctorChat } from "@/components/DoctorChat";
 import { Header } from "@/components/Header";
@@ -59,6 +60,7 @@ export default function PatientCardPage() {
   }, [base]);
 
   useEffect(() => { load(); }, [load]);
+  const names = useMemo(() => Object.fromEntries(adherence.map((a) => [a.prescription_id, a.inn])), [adherence]);
   useEffect(() => {
     api<DiaryChart>(`${base}/diary?period=${period}`).then(setDiary).catch((e) => setError(e.message));
   }, [base, period]);
@@ -152,6 +154,10 @@ export default function PatientCardPage() {
           )}
         </Section>
 
+        <Section title="История изменений схемы">
+          <RegimenHistory patientId={id} names={names} />
+        </Section>
+
         <Section title="Дневник">
           <div className="flex flex-wrap items-center gap-2">
             {PERIODS.map((p) => (
@@ -214,6 +220,14 @@ export default function PatientCardPage() {
                 {s.is_new && " · новый"}{s.alarming && ` · тревожный: ${s.doctor_meaning}`}</li>
             ))}
           </ul>
+        </Section>
+
+        <Section title="Вопросы ассистенту">
+          <AssistantLog patientId={id} />
+        </Section>
+
+        <Section title="Факторы риска">
+          <RiskFactorsForm key={id} patientId={id} initial={card.risk_factors} onError={setError} />
         </Section>
 
         <Section title="Уточняющий блок">

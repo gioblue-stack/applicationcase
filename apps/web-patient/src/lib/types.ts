@@ -139,3 +139,42 @@ export type NextDose = {
   local_date: string;
   local_time: string;
 };
+
+export type AssistantButton = { id: string; label: string; sources: string[]; handler: string; offer_doctor: boolean };
+export type AssistantTree = {
+  blocks: { no: number; title: string; buttons: AssistantButton[] }[];
+  follow_up: Record<string, string>;
+};
+
+export type Finding = { first: string; second: string; severity: "red" | "yellow" | "info" | "unknown"; patient_text: string };
+
+export type AssistantAnswer = {
+  interaction_id: string;
+  button_id: string;
+  label: string;
+  parts: { source: string; text: string; reference: string | null }[];
+  actions: string[];
+  handed_to_doctor: boolean;
+  offer_doctor: boolean;
+  follow_up: string[];
+  choices: Record<string, string>[] | null;
+  findings: Finding[] | null;
+  help_screen: HelpScreen | null;
+};
+
+export type Substance = { id: string; name: string; category: string };
+
+export type AlarmingResult = {
+  action: string;
+  patient_text: string | null;
+  flag_id: string | null;
+  start_risk_protocol: boolean;
+};
+
+export type SelfCheckResult = {
+  level: "none" | "mild" | "pronounced";
+  text: string;
+  actions: string[];
+  screening_note: string;
+  help_screen: HelpScreen | null;
+};

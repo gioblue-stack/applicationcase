@@ -64,6 +64,16 @@ export default function TodayPage() {
       <ErrorText>{error}</ErrorText>
       {today && <Greeting today={today} />}
 
+      {me && !me.has_doctor && (
+        <Card>
+          <p className="font-semibold">Самопроверка самочувствия</p>
+          <p className="mt-1 text-sm text-gray-600">PHQ-9 и GAD-7 — около 5 минут. Это скрининг, а не диагноз.</p>
+          <Link href="/self-check" className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+            Пройти
+          </Link>
+        </Card>
+      )}
+
       {today?.risk_block_trigger && (
         <Card className="ring-1 ring-amber-300">
           <p className="font-semibold">Несколько вопросов о самочувствии</p>

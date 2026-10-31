@@ -86,3 +86,12 @@ def test_doctor_sees_assistant_history(client, igor):
         client.post("/api/v1/me/assistant/answers", headers=me, json={"button_id": "reduce_or_stop"})
     history = client.get(f"/api/v1/doctor/patients/{patient.id}/assistant-history", headers=doctor).json()
     assert history["week_counts"]["reduce_or_stop"] == 2
+
+
+def test_lists_for_new_drug_and_alarming_symptom(client, igor):
+    _, me, _ = igor
+    substances = client.get("/api/v1/me/assistant/substances", headers=me).json()
+    assert {"tramadol", "alcohol"} <= {s["id"] for s in substances}
+    assert any(s["category"] == "drug" for s in substances)  # и препараты из демо-базы
+    symptoms = client.get("/api/v1/me/alarming-symptoms", headers=me).json()
+    assert symptoms and set(symptoms[0]) == {"code", "label"}  # doctor_meaning пациенту не отдаётся

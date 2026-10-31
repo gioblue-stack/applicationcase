@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
 from app.api.deps import DB, AppSettings, ContentDep, CurrentDoctor, DoctorPatient, Now, require_doctor_access
+from app.api.routers.patient import PushEndpointIn, PushSubscriptionIn
 from app.domain.enums import (
     AuditAction,
     FlagLevel,
@@ -32,6 +33,7 @@ from app.services import (
     messages,
     patient_card,
     patients,
+    push,
     safety_plan,
     treatment,
 )
@@ -407,3 +409,41 @@ def assistant_history(patient: DoctorPatient, db: DB, now: Now, content: Content
     result = assistant.history(db, patient.id, now=now, content=content)
     db.commit()
     return result
+
+
+# --- Уведомления врачу о флагах (Web Push) ---------------------------------------------------
+
+
+@router.get("/push")
+def push_status(doctor: CurrentDoctor, db: DB, settings: AppSettings) -> dict:
+    """Красные и жёлтые флаги приходят уведомлением в браузер врача — нейтральным текстом, без имени (§2.2)."""
+    available = push.configured(settings)
+    return {"available": available, "public_key": settings.vapid_public_key if available else None,
+            "devices": push.subscriptions_count(db, doctor.account_id)}
+
+
+@router.post("/push/subscribe", status_code=status.HTTP_204_NO_CONTENT)
+def push_subscribe(body: PushSubscriptionIn, doctor: CurrentDoctor, db: DB, now: Now) -> Response:
+    try:
+        push.subscribe(db, account_id=doctor.account_id, subscription=body.model_dump(), now=now)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/push/unsubscribe", status_code=status.HTTP_204_NO_CONTENT)
+def push_unsubscribe(body: PushEndpointIn, doctor: CurrentDoctor, db: DB) -> Response:
+    push.unsubscribe(db, account_id=doctor.account_id, endpoint=body.endpoint)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/push/test")
+def push_test(doctor: CurrentDoctor, db: DB, settings: AppSettings) -> dict:
+    if not push.configured(settings):
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Уведомления на сервере не настроены")
+    delivered = push.WebPushProvider(settings).send_to_account(
+        db, doctor.account_id, title="Проверка", body="Уведомления работают", url="/", tag="test")
+    db.commit()
+    return {"delivered": delivered}

@@ -295,6 +295,69 @@
     }
    }
   },
+  "/api/v1/auth/demo": {
+   "get": {
+    "tags": [
+     "Вход"
+    ],
+    "summary": "Demo Options",
+    "description": "Какие кнопки «Демо» показать. 404 — демо-вход выключен, кнопок нет.",
+    "operationId": "demo_options_api_v1_auth_demo_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DemoOptions"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/auth/demo/login": {
+   "post": {
+    "tags": [
+     "Вход"
+    ],
+    "summary": "Demo Login Route",
+    "operationId": "demo_login_route_api_v1_auth_demo_login_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DemoLoginIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TokenPair"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/auth/refresh": {
    "post": {
     "tags": [
@@ -685,6 +748,36 @@
    }
   },
   "/api/v1/me/alarming-symptoms": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Alarming Symptom List",
+    "description": "Список для кнопки «Тревожный симптом» — только текст для пациента, без doctor_meaning.",
+    "operationId": "alarming_symptom_list_api_v1_me_alarming_symptoms_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "type": "array",
+         "title": "Response Alarming Symptom List Api V1 Me Alarming Symptoms Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   },
    "post": {
     "tags": [
      "Пациент"
@@ -718,6 +811,142 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/me/push": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Push Status",
+    "description": "Можно ли включить уведомления и сколько устройств пациента уже подписано.",
+    "operationId": "push_status_api_v1_me_push_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Push Status Api V1 Me Push Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/me/push/subscribe": {
+   "post": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Push Subscribe",
+    "operationId": "push_subscribe_api_v1_me_push_subscribe_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PushSubscriptionIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/me/push/unsubscribe": {
+   "post": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Push Unsubscribe",
+    "operationId": "push_unsubscribe_api_v1_me_push_unsubscribe_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PushEndpointIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/me/push/test": {
+   "post": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Push Test",
+    "description": "Кнопка «Проверить»: уведомление приходит сразу, не через очередь.",
+    "operationId": "push_test_api_v1_me_push_test_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Push Test Api V1 Me Push Test Post"
         }
        }
       }
@@ -842,6 +1071,59 @@
           "$ref": "#/components/schemas/DoseView"
          },
          "title": "Response Day Doses Api V1 Me Doses Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/me/doses/next": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Next Doses",
+    "description": "Для экрана «Сегодня»: лекарства без приёмов в этот день и их ближайший приём.",
+    "operationId": "next_doses_api_v1_me_doses_next_get",
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "day",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "date",
+       "title": "Day"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/NextDose"
+         },
+         "title": "Response Next Doses Api V1 Me Doses Next Get"
         }
        }
       }
@@ -1145,6 +1427,37 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/me/assistant/substances": {
+   "get": {
+    "tags": [
+     "Пациент"
+    ],
+    "summary": "Assistant Substances",
+    "operationId": "assistant_substances_api_v1_me_assistant_substances_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "type": "array",
+         "title": "Response Assistant Substances Api V1 Me Assistant Substances Get"
         }
        }
       }
@@ -2842,6 +3155,141 @@
     }
    }
   },
+  "/api/v1/doctor/push": {
+   "get": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Push Status",
+    "description": "Красные и жёлтые флаги приходят уведомлением в браузер врача — нейтральным текстом, без имени (§2.2).",
+    "operationId": "push_status_api_v1_doctor_push_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Push Status Api V1 Doctor Push Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/doctor/push/subscribe": {
+   "post": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Push Subscribe",
+    "operationId": "push_subscribe_api_v1_doctor_push_subscribe_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PushSubscriptionIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/doctor/push/unsubscribe": {
+   "post": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Push Unsubscribe",
+    "operationId": "push_unsubscribe_api_v1_doctor_push_unsubscribe_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PushEndpointIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
+  "/api/v1/doctor/push/test": {
+   "post": {
+    "tags": [
+     "Врач"
+    ],
+    "summary": "Push Test",
+    "operationId": "push_test_api_v1_doctor_push_test_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Push Test Api V1 Doctor Push Test Post"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "HTTPBearer": []
+     }
+    ]
+   }
+  },
   "/health": {
    "get": {
     "tags": [
@@ -3463,6 +3911,65 @@
      "name"
     ],
     "title": "ContactIn"
+   },
+   "DemoLoginIn": {
+    "properties": {
+     "who": {
+      "type": "string",
+      "maxLength": 16,
+      "title": "Who",
+      "description": "doctor | anna | igor | maria | oleg"
+     }
+    },
+    "type": "object",
+    "required": [
+     "who"
+    ],
+    "title": "DemoLoginIn"
+   },
+   "DemoOptions": {
+    "properties": {
+     "patients": {
+      "items": {
+       "$ref": "#/components/schemas/DemoPatient"
+      },
+      "type": "array",
+      "title": "Patients"
+     },
+     "doctor": {
+      "type": "boolean",
+      "title": "Doctor"
+     }
+    },
+    "type": "object",
+    "required": [
+     "patients",
+     "doctor"
+    ],
+    "title": "DemoOptions"
+   },
+   "DemoPatient": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "full_name": {
+      "type": "string",
+      "title": "Full Name"
+     },
+     "scenario": {
+      "type": "string",
+      "title": "Scenario"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "full_name",
+     "scenario"
+    ],
+    "title": "DemoPatient"
    },
    "DiagnosisView": {
     "properties": {
@@ -4953,6 +5460,64 @@
     ],
     "title": "MissedDoseRule"
    },
+   "NextDose": {
+    "properties": {
+     "prescription_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Prescription Id"
+     },
+     "inn": {
+      "type": "string",
+      "title": "Inn"
+     },
+     "trade_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Trade Name"
+     },
+     "dose": {
+      "type": "string",
+      "title": "Dose"
+     },
+     "unit": {
+      "type": "string",
+      "title": "Unit"
+     },
+     "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Scheduled At"
+     },
+     "local_date": {
+      "type": "string",
+      "format": "date",
+      "title": "Local Date"
+     },
+     "local_time": {
+      "type": "string",
+      "title": "Local Time"
+     }
+    },
+    "type": "object",
+    "required": [
+     "prescription_id",
+     "inn",
+     "trade_name",
+     "dose",
+     "unit",
+     "scheduled_at",
+     "local_date",
+     "local_time"
+    ],
+    "title": "NextDose"
+   },
    "NextStep": {
     "type": "string",
     "enum": [
@@ -5804,6 +6369,43 @@
      "titration"
     ],
     "title": "PrescriptionOut"
+   },
+   "PushEndpointIn": {
+    "properties": {
+     "endpoint": {
+      "type": "string",
+      "maxLength": 2048,
+      "title": "Endpoint"
+     }
+    },
+    "type": "object",
+    "required": [
+     "endpoint"
+    ],
+    "title": "PushEndpointIn"
+   },
+   "PushSubscriptionIn": {
+    "properties": {
+     "endpoint": {
+      "type": "string",
+      "maxLength": 2048,
+      "title": "Endpoint"
+     },
+     "keys": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "maxProperties": 4,
+      "title": "Keys"
+     }
+    },
+    "type": "object",
+    "required": [
+     "endpoint",
+     "keys"
+    ],
+    "title": "PushSubscriptionIn"
    },
    "QuestionnairePoint": {
     "properties": {

@@ -1,8 +1,10 @@
 "use client";
 // Главный экран врача — очередь по срочности, а не алфавитный список (§1.1).
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { FlagPush } from "@/components/FlagPush";
 import { Header } from "@/components/Header";
+import { NewPatient } from "@/components/NewPatient";
 import { api } from "@/lib/client";
 import { COLOR_DOT, COLOR_LABEL, FLAG_REASON, formatDateTime } from "@/lib/labels";
 import type { QueueItem } from "@/lib/types";
@@ -22,8 +24,12 @@ export default function QueuePage() {
 
   const [unread, setUnread] = useState<Record<string, Unread>>({});
 
-  useEffect(() => {
+  const loadQueue = useCallback(() => {
     api<QueueItem[]>("doctor/patients").then(setItems).catch((e) => setError(e.message));
+  }, []);
+
+  useEffect(() => {
+    loadQueue();
     // Непрочитанные сообщения пациентов — значок рядом с именем; ошибка здесь очередь не ломает.
     api<{ patient_id: string; crisis_match: boolean }[]>("doctor/messages?status=new")
       .then((list) => {
@@ -36,13 +42,17 @@ export default function QueuePage() {
         setUnread(byPatient);
       })
       .catch(() => null);
-  }, []);
+  }, [loadQueue]);
 
   return (
     <>
       <Header />
       <main className="mx-auto max-w-5xl p-6">
-        <h1 className="mb-4 text-2xl font-semibold">Очередь пациентов</h1>
+        <FlagPush />
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold">Очередь пациентов</h1>
+          <NewPatient onCreated={loadQueue} />
+        </div>
         {error && <p role="alert" className="text-red-700">{error}</p>}
         {!items && !error && <p className="text-slate-500">Загрузка…</p>}
         {items?.length === 0 && <p className="text-slate-500">Пациентов пока нет.</p>}

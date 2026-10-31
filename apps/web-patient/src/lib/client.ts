@@ -23,6 +23,16 @@ export async function api<T>(path: string, init?: { method?: string; body?: unkn
   return data as T;
 }
 
+/** Файл к сообщению (multipart): заголовок с границей ставит сам браузер. */
+export async function upload<T>(path: string, file: File): Promise<T> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await fetch(`/api/backend/${path}`, { method: "POST", body: form, cache: "no-store" });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new ApiError(response.status, detailText(data), data);
+  return data as T;
+}
+
 function detailText(data: unknown): string {
   const detail = (data as { detail?: unknown } | null)?.detail;
   if (typeof detail === "string") return detail;

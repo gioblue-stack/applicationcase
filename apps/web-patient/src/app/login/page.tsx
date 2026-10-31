@@ -68,6 +68,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    // Ссылка из QR-кода врача: /login?invite=КОД — код приглашения уже подставлен.
+    const fromLink = new URLSearchParams(window.location.search).get("invite");
+    if (fromLink) {
+      setInvite(fromLink);
+      setFirstTime(true);
+    }
+  }, []);
+
   async function requestCode(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);

@@ -83,6 +83,12 @@ class AssistantAnswer:
     help_screen: HelpScreen | None = None
 
 
+def substance_choices(content: Content) -> list[dict]:
+    """Вещества из демо-базы: «Можно ли вместе с…» и «Мне назначили новый препарат»."""
+    return [{"id": s.id, "name": s.name, "category": s.category} for s in content.interactions.substances] + [
+        {"id": d.id, "name": d.inn, "category": "drug"} for d in content.drugs.drugs]
+
+
 def _require_doctor(db: Session, patient: PatientProfile) -> None:
     if active_doctor_id(db, patient.id) is None:
         raise AssistantError("Ассистент доступен пациенту, подключённому к лечащему врачу")
@@ -259,8 +265,7 @@ def answer(db: Session, *, patient: PatientProfile, button_id: str, now: datetim
         parts = _instruction(db, patient, button, content)
     elif h == "choose_substance":
         actions = ["choose_substance"]
-        choices = [{"id": s.id, "name": s.name, "category": s.category} for s in content.interactions.substances] + [
-            {"id": d.id, "name": d.inn, "category": "drug"} for d in content.drugs.drugs]
+        choices = substance_choices(content)
     elif h == "choose_side_effect":
         actions = ["choose_side_effect"]
         choices = [c.model_dump() for c in content.assistant.side_effect_choices]

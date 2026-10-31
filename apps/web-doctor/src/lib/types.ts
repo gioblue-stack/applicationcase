@@ -18,3 +18,7 @@ export type RiskAssessmentView = S["RiskAssessmentView"];
 export type SafetyPlanView = S["SafetyPlanView"];
 export type FlagOut = S["FlagOut"];
 export type Period = "week" | "month" | "all";
+export type InviteCard = S["PatientCard"];
+export type RegimenChange = S["RegimenChangeOut"];
+export type AssistantHistory = S["AssistantHistory"];
+export type RiskFactors = S["RiskFactorsIn"];

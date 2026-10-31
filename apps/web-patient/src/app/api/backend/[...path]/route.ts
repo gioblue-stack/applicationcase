@@ -13,14 +13,16 @@ async function forward(request: Request, path: string[]) {
     return NextResponse.json({ detail: "Не найдено" }, { status: 404 });
   }
   const url = new URL(request.url);
-  const body = request.method === "GET" ? undefined : await request.text();
+  // Байты как есть: файлы к сообщению приходят multipart/form-data с границей в content-type.
+  const body = request.method === "GET" ? undefined : await request.arrayBuffer();
+  const contentType = request.headers.get("content-type") ?? "application/json";
 
   const call = (token: string | undefined) =>
     fetch(`${API_URL}/api/v1/${target}${url.search}`, {
       method: request.method,
       headers: {
         ...(token ? { authorization: `Bearer ${token}` } : {}),
-        ...(body ? { "content-type": "application/json" } : {}),
+        ...(body?.byteLength ? { "content-type": contentType } : {}),
       },
       body,
       cache: "no-store",

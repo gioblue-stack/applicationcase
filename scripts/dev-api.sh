@@ -20,6 +20,19 @@ print(f"MC_DEMO_DOCTOR_PASSWORD={secrets.token_urlsafe(12)}")
 PY
   chmod 600 "$VAR/dev-secrets.env"
 fi
+# Ключи VAPID для уведомлений на телефон (Web Push) — дописываются и в уже существующий файл секретов.
+if ! grep -q '^MC_VAPID_PRIVATE_KEY=' "$VAR/dev-secrets.env"; then
+  "$ROOT/.venv/bin/python" - >> "$VAR/dev-secrets.env" <<'PY'
+import base64
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+key = ec.generate_private_key(ec.SECP256R1())
+b64 = lambda raw: base64.urlsafe_b64encode(raw).rstrip(b"=").decode()
+print(f"MC_VAPID_PRIVATE_KEY={b64(key.private_numbers().private_value.to_bytes(32, 'big'))}")
+public = key.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+print(f"MC_VAPID_PUBLIC_KEY={b64(public)}")
+PY
+fi
 set -a; source "$VAR/dev-secrets.env"; set +a
 export MC_ENV=development
 export MC_DATABASE_URL="postgresql+psycopg://mindcare@127.0.0.1:${PG_PORT}/mindcare"

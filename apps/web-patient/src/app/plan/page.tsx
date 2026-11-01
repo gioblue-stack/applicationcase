@@ -26,15 +26,15 @@ export default function PlanPage() {
         <Card key={p.prescription_id}>
           <p className="text-lg font-semibold">{p.inn}{p.trade_name && ` (${p.trade_name})`}</p>
           <p className="mt-1">{p.current_dose} {p.unit}, {p.form} — в {p.times.join(", ")}</p>
-          {p.with_food && FOOD[p.with_food] && <p className="text-sm text-gray-600">{FOOD[p.with_food]}</p>}
+          {p.with_food && FOOD[p.with_food] && <p className="text-sm text-muted">{FOOD[p.with_food]}</p>}
           {p.instructions && <p className="mt-2 text-sm">{p.instructions}</p>}
           {p.upcoming.length > 0 && (
-            <div className="mt-3 rounded-lg bg-brand-50 p-3 text-sm">
+            <div className="mt-3 rounded-2xl bg-brand-50 p-3 text-sm">
               <p className="font-semibold">Дальше по плану</p>
               {p.upcoming.map((u) => <p key={u}>{u}</p>)}
             </div>
           )}
-          <div className="mt-3 rounded-lg bg-gray-50 p-3 text-sm">
+          <div className="mt-3 rounded-2xl bg-subtle p-3 text-sm">
             <p className="font-semibold">Если пропустили приём</p>
             <p>{p.missed_dose_rule_text}</p>
           </div>
@@ -44,10 +44,10 @@ export default function PlanPage() {
             className="mt-4 block rounded-2xl bg-red-50 p-4 font-semibold text-red-800 ring-1 ring-red-200">
         Сообщить о тревожном симптоме →
       </Link>
-      <Link href="/assistant?q=new_drug" className="mt-3 block rounded-2xl bg-white p-4 font-semibold text-brand-800 shadow-sm">
+      <Link href="/assistant?q=new_drug" className="mt-3 block rounded-2xl bg-surface p-4 font-semibold text-brand-800 shadow-sm">
         Мне назначил препарат другой врач →
       </Link>
-      <Link href="/safety-plan" className="mt-3 block rounded-2xl bg-white p-4 font-semibold text-brand-800 shadow-sm">
+      <Link href="/safety-plan" className="mt-3 block rounded-2xl bg-surface p-4 font-semibold text-brand-800 shadow-sm">
         Мой план безопасности →
       </Link>
     </Shell>

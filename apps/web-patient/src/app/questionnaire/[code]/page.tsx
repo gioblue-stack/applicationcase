@@ -65,11 +65,11 @@ export default function QuestionnairePage() {
         <Card>
           <p className="text-lg">{result.feedback.result_text}</p>
           {result.feedback.change_text && <p className="mt-2">{result.feedback.change_text}</p>}
-          <p className="mt-3 text-sm text-gray-500">{result.feedback.note}</p>
+          <p className="mt-3 text-sm text-muted">{result.feedback.note}</p>
         </Card>
         {next ? (
           <Link href={`/questionnaire/${next}`} replace
-                className="mt-4 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+                className="mt-4 block rounded-2xl bg-brand-600 btn-solid py-3 text-center font-semibold text-white">
             Дальше: {content!.instruments[next].title}
           </Link>
         ) : (
@@ -89,7 +89,7 @@ export default function QuestionnairePage() {
             {instrument.options.map((o) => (
               <button key={o.value} type="button"
                       onClick={() => setAnswers(Object.assign([...answers], { [i]: o.value }))}
-                      className={`rounded-lg px-2 py-2 text-sm ${answers[i] === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                      className={`rounded-2xl px-2 py-2 text-sm ${answers[i] === o.value ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                 {o.label}
               </button>
             ))}
@@ -102,7 +102,7 @@ export default function QuestionnairePage() {
           <div className="grid grid-cols-2 gap-2">
             {instrument.difficulty.options.map((o) => (
               <button key={o.value} type="button" onClick={() => setDifficulty(difficulty === o.value ? null : o.value)}
-                      className={`rounded-lg px-2 py-2 text-sm ${difficulty === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                      className={`rounded-2xl px-2 py-2 text-sm ${difficulty === o.value ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                 {o.label}
               </button>
             ))}
@@ -113,7 +113,7 @@ export default function QuestionnairePage() {
       <PrimaryButton onClick={submit} disabled={busy || !complete} className="mt-4">
         {complete ? "Отправить" : "Ответьте на все вопросы"}
       </PrimaryButton>
-      {instrument.copyright && <p className="mt-4 text-xs text-gray-400">{instrument.copyright}</p>}
+      {instrument.copyright && <p className="mt-4 text-xs text-muted">{instrument.copyright}</p>}
     </Shell>
   );
 }

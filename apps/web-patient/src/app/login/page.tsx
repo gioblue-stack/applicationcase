@@ -41,13 +41,13 @@ function DemoPatients({ onError }: { onError: (message: string) => void }) {
 
   if (patients.length === 0) return null;
   return (
-    <section className="mt-6 rounded-2xl border-2 border-dashed border-brand-200 bg-white p-4">
+    <section className="mt-6 rounded-2xl border-2 border-dashed border-brand-200 bg-surface p-4">
       <p className="font-bold text-brand-800">Посмотреть без регистрации</p>
-      <p className="text-xs text-gray-500">Демо-режим для презентации: вход за демо-пациента без кода.</p>
+      <p className="text-xs text-muted">Демо-режим для презентации: вход за демо-пациента без кода.</p>
       <div className="mt-3 grid grid-cols-2 gap-2">
         {patients.map((p) => (
           <button key={p.key} disabled={busy} onClick={() => enter(p.key)}
-                  className="rounded-xl bg-brand-50 px-3 py-2 text-left disabled:opacity-50">
+                  className="rounded-2xl bg-brand-50 px-3 py-2 text-left disabled:opacity-50">
             <span className="block font-semibold text-brand-900">{p.full_name.split(" ")[0]}</span>
             <span className="block text-xs text-brand-900/70">{p.scenario}</span>
           </button>
@@ -118,21 +118,21 @@ export default function LoginPage() {
       </div>
 
       {step === "login" ? (
-        <form onSubmit={requestCode} className="mt-8 rounded-2xl border-2 border-brand-100 bg-white p-5">
+        <form onSubmit={requestCode} className="mt-8 rounded-2xl border border-line/70 bg-surface p-5">
           <label className="block text-sm font-medium" htmlFor="login">Телефон или e-mail</label>
           <input id="login" value={login} onChange={(e) => setLogin(e.target.value)} required autoComplete="username"
                  inputMode="email" placeholder="+7 900 000-00-00"
-                 className="mt-2 w-full rounded-xl border border-gray-300 px-3 py-3 text-lg" />
+                 className="mt-2 w-full rounded-2xl border border-line px-3 py-3 text-lg" />
           <PrimaryButton type="submit" disabled={busy || !login.trim()} className="mt-4">Получить код</PrimaryButton>
           <ErrorText>{error}</ErrorText>
         </form>
       ) : (
-        <form onSubmit={signIn} className="mt-8 rounded-2xl border-2 border-brand-100 bg-white p-5">
-          <p className="text-sm text-gray-600">Код отправлен на {login}.</p>
+        <form onSubmit={signIn} className="mt-8 rounded-2xl border border-line/70 bg-surface p-5">
+          <p className="text-sm text-muted">Код отправлен на {login}.</p>
           <label className="mt-3 block text-sm font-medium" htmlFor="code">Код из сообщения</label>
           <input id="code" value={code} onChange={(e) => setCode(e.target.value)} required inputMode="numeric"
                  autoComplete="one-time-code" maxLength={8}
-                 className="mt-2 w-full rounded-xl border border-gray-300 px-3 py-3 text-center text-2xl tracking-widest" />
+                 className="mt-2 w-full rounded-2xl border border-line px-3 py-3 text-center text-2xl tracking-widest" />
 
           <label className="mt-4 flex items-center gap-3 text-sm">
             <input type="checkbox" checked={firstTime} onChange={(e) => setFirstTime(e.target.checked)} className="size-5" />
@@ -142,9 +142,9 @@ export default function LoginPage() {
             <div className="mt-3">
               <label className="block text-sm font-medium" htmlFor="invite">Код приглашения</label>
               <input id="invite" value={invite} onChange={(e) => setInvite(e.target.value)} required
-                     autoCapitalize="characters" className="mt-2 w-full rounded-xl border border-gray-300 px-3 py-3 text-lg" />
+                     autoCapitalize="characters" className="mt-2 w-full rounded-2xl border border-line px-3 py-3 text-lg" />
               {content && (
-                <div className="mt-4 rounded-xl bg-gray-50 p-3 text-sm leading-relaxed text-gray-700">
+                <div className="mt-4 rounded-2xl bg-subtle p-3 text-sm leading-relaxed text-muted">
                   <p className="font-semibold">{content.consent.title}</p>
                   {content.consent.paragraphs.map((p) => <p key={p} className="mt-2">{p}</p>)}
                 </div>
@@ -167,8 +167,8 @@ export default function LoginPage() {
       )}
 
       {step === "login" && <DemoPatients onError={setError} />}
-      {content && <p className="mt-6 text-center text-xs text-gray-500">{content.disclaimer}</p>}
-      <Link href="/help" className="mt-auto block rounded-xl bg-red-600 btn-3d-red py-3 text-center font-semibold text-white">
+      {content && <p className="mt-6 text-center text-xs text-muted">{content.disclaimer}</p>}
+      <Link href="/help" className="mt-auto block rounded-2xl bg-help btn-solid-red py-3 text-center font-semibold text-white">
         Мне сейчас очень плохо
       </Link>
     </div>

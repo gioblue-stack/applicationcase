@@ -92,25 +92,25 @@ export default function PushSettings() {
   return (
     <Card>
       <p className="font-semibold">Напоминания на телефон</p>
-      <p className="mt-1 text-sm text-gray-600">О приёме лекарств по схеме врача и о дневнике. На экране блокировки —
+      <p className="mt-1 text-sm text-muted">О приёме лекарств по схеме врача и о дневнике. На экране блокировки —
         только «Пора отметить приём», без названий лекарств.</p>
 
       {status && !status.available && (
-        <p className="mt-3 text-sm text-gray-500">Уведомления пока не настроены на сервере.</p>
+        <p className="mt-3 text-sm text-muted">Уведомления пока не настроены на сервере.</p>
       )}
-      {status?.available && blocker && <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">{blocker}</p>}
+      {status?.available && blocker && <p className="mt-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900">{blocker}</p>}
       {status?.available && !blocker && (
         subscribed ? (
           <div className="mt-3 space-y-2">
             <p className="text-sm font-semibold text-brand-700">Включены на этом телефоне ✓</p>
             <PrimaryButton onClick={test} disabled={busy}>Прислать проверочное</PrimaryButton>
-            <button onClick={disable} disabled={busy} className="w-full py-2 text-sm text-gray-500">Выключить</button>
+            <button onClick={disable} disabled={busy} className="w-full py-2 text-sm text-muted">Выключить</button>
           </div>
         ) : (
           <PrimaryButton onClick={enable} disabled={busy} className="mt-3">Включить напоминания</PrimaryButton>
         )
       )}
-      {message && <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-900">{message}</p>}
+      {message && <p className="mt-3 rounded-2xl bg-brand-50 p-3 text-sm text-brand-900">{message}</p>}
       <ErrorText>{error}</ErrorText>
     </Card>
   );

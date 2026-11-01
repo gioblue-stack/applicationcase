@@ -45,7 +45,7 @@ export default function HelpPage() {
           <p className="text-lg">Если вам нужна помощь сейчас — позвоните:</p>
           {FALLBACK.map((p) => (
             <a key={p.tel} href={`tel:${p.tel}`}
-               className="mt-3 block rounded-xl bg-red-600 btn-3d-red px-4 py-4 text-center text-lg font-semibold text-white">
+               className="mt-3 block rounded-2xl bg-help btn-solid-red px-4 py-4 text-center text-lg font-semibold text-white">
               {p.display} — {p.service}
             </a>
           ))}

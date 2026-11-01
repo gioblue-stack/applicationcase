@@ -46,13 +46,13 @@ export default function StressPage() {
         {result.safety_text && (
           <Card className="bg-red-50 ring-1 ring-red-200">
             <p>{result.safety_text}</p>
-            <a href="tel:112" className="mt-3 block rounded-xl bg-red-600 btn-3d-red py-3 text-center font-semibold text-white">
+            <a href="tel:112" className="mt-3 block rounded-2xl bg-help btn-solid-red py-3 text-center font-semibold text-white">
               Позвонить 112
             </a>
           </Card>
         )}
         {!result.help_screen && <MascotSays pose="both-wings">{stress.outro}</MascotSays>}
-        <Link href="/" className="mt-4 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+        <Link href="/" className="mt-4 block rounded-2xl bg-brand-600 btn-solid py-3 text-center font-semibold text-white">
           На главную
         </Link>
       </Shell>
@@ -72,7 +72,7 @@ export default function StressPage() {
                 {stress.options.map((o) => (
                   <button key={o.value} type="button"
                           onClick={() => setAnswers({ ...answers, [item.id]: o.value })}
-                          className={`rounded-lg px-2 py-2 text-xs ${answers[item.id] === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                          className={`rounded-2xl px-2 py-2 text-xs ${answers[item.id] === o.value ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                     {o.label}
                   </button>
                 ))}
@@ -84,13 +84,13 @@ export default function StressPage() {
       <Card>
         <p className="mb-2">{stress.other_prompt}</p>
         <textarea value={other} onChange={(e) => setOther(e.target.value)} rows={3} maxLength={500}
-                  className="w-full rounded-lg border border-gray-300 p-2" />
+                  className="w-full rounded-2xl border border-line p-2" />
       </Card>
       <ErrorText>{error}</ErrorText>
       <PrimaryButton onClick={submit} disabled={busy || !answered} className="mt-4">
         {answered ? "Отправить врачу" : "Ответьте хотя бы на один вопрос"}
       </PrimaryButton>
-      <Link href="/" className="mt-3 block py-2 text-center text-sm text-gray-500">Заполню позже</Link>
+      <Link href="/" className="mt-3 block py-2 text-center text-sm text-muted">Заполню позже</Link>
     </Shell>
   );
 }

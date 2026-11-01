@@ -16,7 +16,7 @@ const SOURCE: Record<string, string> = {
 };
 const SEVERITY: Record<string, string> = {
   red: "bg-red-50 ring-red-200", yellow: "bg-amber-50 ring-amber-200", info: "bg-brand-50 ring-brand-100",
-  unknown: "bg-gray-50 ring-gray-200",
+  unknown: "bg-subtle ring-line",
 };
 // Кнопки-действия, которые ведут на другие экраны сайта.
 const LINKS: Record<string, { href: string; label: string }> = {
@@ -105,12 +105,12 @@ export default function AssistantPage() {
 
   if (me && !me.has_doctor) {
     return (
-      <Shell title="Помощник">
+      <Shell title="Помощник" back>
         <MascotSays pose="standing">
           Помощник отвечает по вашей схеме лечения, поэтому он доступен после подключения к лечащему врачу.
           А пока можно пройти самопроверку самочувствия.
         </MascotSays>
-        <Link href="/self-check" className="mt-4 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+        <Link href="/self-check" className="mt-4 block rounded-2xl bg-brand-600 btn-solid py-3 text-center font-semibold text-white">
           Самопроверка
         </Link>
       </Shell>
@@ -119,7 +119,7 @@ export default function AssistantPage() {
 
   const findings = answer?.findings ?? [];
   return (
-    <Shell title="Помощник">
+    <Shell title="Помощник" back>
       {!answer && (
         <MascotSays pose="one-wing">
           Выберите вопрос. Я отвечаю только по вашей схеме, инструкции и проверенным текстам — а если не знаю, передам врачу.
@@ -134,7 +134,7 @@ export default function AssistantPage() {
           {findings.length > 0 && (
             <ul className="mt-3 space-y-2">
               {findings.map((f, i) => (
-                <li key={i} className={`rounded-lg p-3 text-sm ring-1 ${SEVERITY[f.severity]}`}>
+                <li key={i} className={`rounded-2xl p-3 text-sm ring-1 ${SEVERITY[f.severity]}`}>
                   <b>{f.first} + {f.second}</b>: {f.patient_text}
                 </li>
               ))}
@@ -144,16 +144,16 @@ export default function AssistantPage() {
           {answer.parts.filter((p) => !findings.some((f) => p.text.endsWith(f.patient_text))).map((p, i) => (
             <div key={i} className="mt-3">
               <p className="whitespace-pre-line">{p.text}</p>
-              <p className="mt-1 text-xs text-gray-500">{SOURCE[p.source] ?? p.source}{p.reference && ` · ${p.reference}`}</p>
+              <p className="mt-1 text-xs text-muted">{SOURCE[p.source] ?? p.source}{p.reference && ` · ${p.reference}`}</p>
             </div>
           ))}
           {answer.handed_to_doctor && (
-            <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-900">Вопрос передан вашему врачу — ответ придёт в «Врачу».</p>
+            <p className="mt-3 rounded-2xl bg-brand-50 p-3 text-sm text-brand-900">Вопрос передан вашему врачу — ответ придёт в «Врачу».</p>
           )}
 
           {answer.actions.filter((a) => LINKS[a]).map((a) => (
             <Link key={a} href={LINKS[a].href}
-                  className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">
+                  className="mt-3 block rounded-2xl bg-brand-600 btn-solid py-3 text-center font-semibold text-white">
               {LINKS[a].label}
             </Link>
           ))}
@@ -175,7 +175,7 @@ export default function AssistantPage() {
           )}
           {mode === "alarming" && !alarming && (
             <div className="mt-3 space-y-2">
-              <p className="text-sm text-gray-600">Что из этого происходит сейчас?</p>
+              <p className="text-sm text-muted">Что из этого происходит сейчас?</p>
               {choices.map((c) => (
                 <button key={c.code} disabled={busy}
                         onClick={async () => {
@@ -184,7 +184,7 @@ export default function AssistantPage() {
                           if (r?.start_risk_protocol) router.push("/risk?trigger=alarming_symptom");
                           else if (r) setAlarming(r);
                         }}
-                        className="block w-full rounded-xl bg-white px-3 py-3 text-left text-sm ring-1 ring-red-200">
+                        className="block w-full rounded-2xl bg-surface px-3 py-3 text-left text-sm ring-1 ring-red-200">
                   {c.label}
                 </button>
               ))}
@@ -195,11 +195,11 @@ export default function AssistantPage() {
 
           {!mode && !alarming && (answer.parts.length > 0 || findings.length > 0) && feedback === null && (
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <button onClick={() => sendFeedback(true)} className="rounded-xl bg-gray-100 py-2 text-sm font-semibold">
+              <button onClick={() => sendFeedback(true)} className="rounded-2xl bg-subtle py-2 text-sm font-semibold">
                 {tree?.follow_up.helped ?? "Ответ помог"}
               </button>
               {!answer.handed_to_doctor && (
-                <button onClick={() => sendFeedback(false)} className="rounded-xl bg-gray-100 py-2 text-sm font-semibold">
+                <button onClick={() => sendFeedback(false)} className="rounded-2xl bg-subtle py-2 text-sm font-semibold">
                   {tree?.follow_up.still_ask_doctor ?? "Всё равно хочу спросить врача"}
                 </button>
               )}
@@ -216,7 +216,7 @@ export default function AssistantPage() {
           <div className="mt-2 flex flex-col gap-2">
             {block.buttons.map((b) => (
               <button key={b.id} onClick={() => ask(b.id)} disabled={busy}
-                      className="rounded-xl bg-gray-50 px-3 py-3 text-left text-sm font-medium active:bg-brand-50">
+                      className="rounded-2xl bg-subtle px-3 py-3 text-left text-sm font-medium active:bg-brand-50">
                 {b.label}
               </button>
             ))}
@@ -240,9 +240,9 @@ function SubstancePicker({ choices, busy, submitLabel, onPick }: {
     <div className="mt-3">
       <input value={picked?.name ?? query} placeholder="Название препарата, БАД или «алкоголь»"
              onChange={(e) => { setPicked(null); setQuery(e.target.value); }} maxLength={100}
-             className="w-full rounded-lg border border-gray-300 p-2" />
+             className="w-full rounded-2xl border border-line p-2" />
       {!picked && found.length > 0 && (
-        <ul className="mt-1 divide-y rounded-lg border">
+        <ul className="mt-1 divide-y rounded-2xl border">
           {found.map((c) => (
             <li key={c.id}>
               <button onClick={() => setPicked(c)} className="w-full px-3 py-2 text-left text-sm">{c.name}</button>
@@ -251,7 +251,7 @@ function SubstancePicker({ choices, busy, submitLabel, onPick }: {
         </ul>
       )}
       {!picked && q && found.length === 0 && (
-        <p className="mt-1 text-xs text-gray-500">В базе такого нет — отправим название как есть, и вопрос уйдёт врачу.</p>
+        <p className="mt-1 text-xs text-muted">В базе такого нет — отправим название как есть, и вопрос уйдёт врачу.</p>
       )}
       <PrimaryButton disabled={busy || (!picked && !q)} className="mt-3"
                      onClick={() => onPick(picked ? { substance_id: picked.id, free_name: null }
@@ -273,13 +273,13 @@ function SideEffectPicker({ choices, busy, onPick }: {
       <div className="grid grid-cols-2 gap-2">
         {choices.map((c) => (
           <button key={c.code} onClick={() => setCode(c.code)}
-                  className={`rounded-lg px-2 py-2 text-sm ${code === c.code ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                  className={`rounded-2xl px-2 py-2 text-sm ${code === c.code ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
             {c.label}
           </button>
         ))}
       </div>
       {free && <textarea value={other} onChange={(e) => setOther(e.target.value)} maxLength={500} rows={3}
-                         placeholder="Опишите, что беспокоит" className="mt-2 w-full rounded-lg border border-gray-300 p-2" />}
+                         placeholder="Опишите, что беспокоит" className="mt-2 w-full rounded-2xl border border-line p-2" />}
       <PrimaryButton disabled={busy || !code || (free && !other.trim())} className="mt-3"
                      onClick={() => onPick(code!, free ? other.trim() : null)}>
         Отметить
@@ -293,7 +293,7 @@ function AlarmingAdvice({ result }: { result: AlarmingResult }) {
     <div className="mt-3 rounded-2xl bg-red-50 p-4 ring-1 ring-red-200">
       <p className="text-lg leading-relaxed">{result.patient_text}</p>
       {result.action.includes("112") && (
-        <a href="tel:112" className="mt-3 block rounded-xl bg-red-600 btn-3d-red py-3 text-center text-lg font-semibold text-white">
+        <a href="tel:112" className="mt-3 block rounded-2xl bg-help btn-solid-red py-3 text-center text-lg font-semibold text-white">
           Позвонить 112
         </a>
       )}
@@ -320,14 +320,14 @@ function AttachForm({ busy, run }: { busy: boolean; run: Run }) {
     if (ok) setSent(true);
   }
 
-  if (sent) return <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-900">Отправлено врачу ✓</p>;
+  if (sent) return <p className="mt-3 rounded-2xl bg-brand-50 p-3 text-sm text-brand-900">Отправлено врачу ✓</p>;
   return (
     <div className="mt-3">
       <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} maxLength={2000}
-                placeholder="Что назначил другой врач (необязательно)" className="w-full rounded-lg border border-gray-300 p-2" />
+                placeholder="Что назначил другой врач (необязательно)" className="w-full rounded-2xl border border-line p-2" />
       <input type="file" multiple accept="image/jpeg,image/png,application/pdf"
              onChange={(e) => setFiles(Array.from(e.target.files ?? []).slice(0, 5))} className="mt-2 block w-full text-sm" />
-      <p className="mt-1 text-xs text-gray-500">Фото (JPEG, PNG) или PDF, до 10 МБ, не больше 5 файлов.</p>
+      <p className="mt-1 text-xs text-muted">Фото (JPEG, PNG) или PDF, до 10 МБ, не больше 5 файлов.</p>
       <PrimaryButton disabled={busy || (files.length === 0 && !text.trim())} onClick={send} className="mt-3">
         Отправить врачу
       </PrimaryButton>

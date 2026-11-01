@@ -1,6 +1,7 @@
 // Вопрос врачу (§1.4, §2.4): до отправки — срок ответа и «это не канал экстренной связи».
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import HelpView from "@/components/HelpView";
 import { MascotSays } from "@/components/Mascot";
@@ -9,6 +10,11 @@ import { ApiError, api, newId } from "@/lib/client";
 import type { HelpScreen, Message } from "@/lib/types";
 
 type Preface = { doctor_name: string; response_time_hours: number | null; warning: string };
+
+/** «Иванова Елена Сергеевна (демо)» → «ИЕ». */
+function initials(name: string) {
+  return name.replace(/\(.*?\)/g, "").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+}
 
 function when(iso: string) {
   return new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
@@ -70,21 +76,33 @@ export default function MessagesPage() {
 
   if (noDoctor) {
     return (
-      <Shell title="Врачу">
+      <Shell title="Врач">
         <MascotSays pose="standing">Сообщения доступны, когда вы подключены к лечащему врачу по коду приглашения.</MascotSays>
       </Shell>
     );
   }
 
   return (
-    <Shell title="Вопрос врачу">
+    <Shell title="Врач">
       {preface && (
-        <Card className="bg-amber-50">
-          <p className="font-semibold">{preface.doctor_name}</p>
-          {preface.response_time_hours && (
-            <p className="text-sm">Обычно отвечает в течение {preface.response_time_hours} ч в рабочее время.</p>
-          )}
-          <p className="mt-2 text-sm font-medium text-amber-950">{preface.warning}</p>
+        <Card>
+          <div className="flex items-center gap-4">
+            <span aria-hidden className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-100 text-lg font-extrabold text-brand-800">
+              {initials(preface.doctor_name)}
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm text-muted">Мой врач</p>
+              <p className="text-lg leading-snug font-extrabold text-brand-900">{preface.doctor_name}</p>
+              {preface.response_time_hours && (
+                <p className="text-sm text-muted">Обычно отвечает в течение {preface.response_time_hours} ч в рабочее время</p>
+              )}
+            </div>
+          </div>
+          <Link href="/assistant"
+                className="mt-4 flex min-h-13 items-center justify-center rounded-2xl bg-brand-50 px-5 font-bold text-brand-800 hover:bg-brand-100">
+            Спросить Помощника о лечении
+          </Link>
+          <p className="mt-4 rounded-2xl bg-amber-50 p-3 text-sm text-amber-950">{preface.warning}</p>
         </Card>
       )}
       {help && <div className="mt-4"><HelpView screen={help} /></div>}
@@ -94,10 +112,10 @@ export default function MessagesPage() {
           const mine = m.direction === "patient_to_doctor";
           return (
             <li key={m.id}
-                className={`max-w-[85%] rounded-2xl px-4 py-2 ${mine ? "self-end bg-brand-600 text-white" : "self-start bg-white shadow-sm"}`}>
+                className={`max-w-[85%] rounded-3xl px-4 py-3 ${mine ? "self-end bg-brand-600 text-white" : "self-start bg-surface shadow-sm"}`}>
               {!mine && <p className="mb-1 text-xs font-bold text-brand-700">{preface?.doctor_name ?? "Врач"}</p>}
               <p className="whitespace-pre-line">{m.body}</p>
-              <p className={`mt-1 text-xs ${mine ? "text-brand-100" : "text-gray-400"}`}>{when(m.created_at)}</p>
+              <p className={`mt-1 text-xs ${mine ? "text-brand-100" : "text-muted"}`}>{when(m.created_at)}</p>
             </li>
           );
         })}
@@ -106,12 +124,12 @@ export default function MessagesPage() {
       <form onSubmit={send}>
         <Card>
           {fromAssistant && (
-            <p className="mb-2 rounded-lg bg-brand-50 p-2 text-sm text-brand-900">
+            <p className="mb-2 rounded-2xl bg-brand-50 p-2 text-sm text-brand-900">
               Вопрос к помощнику: «{fromAssistant.label}». Врач увидит его вместе с вашим сообщением.
             </p>
           )}
           <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} maxLength={2000} required
-                    placeholder="Ваш вопрос врачу" className="w-full rounded-lg border border-gray-300 p-2" />
+                    placeholder="Ваш вопрос врачу" className="w-full rounded-2xl border border-line p-2" />
           <ErrorText>{error}</ErrorText>
           <PrimaryButton type="submit" disabled={busy || !text.trim()} className="mt-3">Отправить</PrimaryButton>
         </Card>

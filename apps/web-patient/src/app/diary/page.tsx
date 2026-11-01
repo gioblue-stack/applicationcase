@@ -88,7 +88,7 @@ export default function DiaryPage() {
           <Card className="ring-1 ring-amber-300">
             <p>Ответьте, пожалуйста, на несколько коротких вопросов о самочувствии.</p>
             <Link href={`/risk?trigger=${result.offer_risk_block}`}
-                  className="mt-3 block rounded-xl bg-brand-600 btn-3d py-3 text-center font-semibold text-white">Ответить</Link>
+                  className="mt-3 block rounded-2xl bg-brand-600 btn-solid py-3 text-center font-semibold text-white">Ответить</Link>
           </Card>
         )}
         <Link href="/" className="mt-4 block text-center text-brand-700">На главную</Link>
@@ -98,7 +98,7 @@ export default function DiaryPage() {
 
   return (
     <Shell title="Дневник" back>
-      <p className="mt-2 text-gray-600">{diary.invitation} Можно пропустить любой вопрос.</p>
+      <p className="mt-2 text-muted">{diary.invitation} Можно пропустить любой вопрос.</p>
       {questions.map((q) => (
         <Card key={q.id}>
           <p className="mb-3 font-medium">{q.text}</p>
@@ -108,17 +108,17 @@ export default function DiaryPage() {
           {q.type === "sleep" && (
             <>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600">Часов сна</span>
+                <span className="text-sm text-muted">Часов сна</span>
                 <button type="button" onClick={() => setSleepHours(Math.max(0, (sleepHours ?? 7.5) - 0.5))}
-                        className="size-10 rounded-full bg-gray-100 text-xl">−</button>
+                        className="size-10 rounded-full bg-subtle text-xl">−</button>
                 <span className="w-14 text-center text-lg font-semibold">{sleepHours ?? "—"}</span>
                 <button type="button" onClick={() => setSleepHours(Math.min(24, (sleepHours ?? 6.5) + 0.5))}
-                        className="size-10 rounded-full bg-gray-100 text-xl">+</button>
+                        className="size-10 rounded-full bg-subtle text-xl">+</button>
                 {sleepHours !== null && (
-                  <button type="button" onClick={() => setSleepHours(null)} className="text-sm text-gray-500">сбросить</button>
+                  <button type="button" onClick={() => setSleepHours(null)} className="text-sm text-muted">сбросить</button>
                 )}
               </div>
-              <p className="mb-2 mt-4 text-sm text-gray-600">Качество сна</p>
+              <p className="mb-2 mt-4 text-sm text-muted">Качество сна</p>
               <Scale value={values.sleep_quality ?? null} onChange={set("sleep_quality")}
                      minLabel={q.quality_min_label} maxLabel={q.quality_max_label} />
             </>
@@ -127,7 +127,7 @@ export default function DiaryPage() {
             <div className="flex flex-col gap-2">
               {q.options!.map((o) => (
                 <button key={o.value} type="button" onClick={() => setMeds(meds === o.value ? null : o.value)}
-                        className={`rounded-lg py-2 ${meds === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                        className={`rounded-2xl py-2 ${meds === o.value ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                   {o.label}
                 </button>
               ))}
@@ -138,7 +138,7 @@ export default function DiaryPage() {
               <div className="grid grid-cols-2 gap-2">
                 {[true, false].map((v) => (
                   <button key={String(v)} type="button" onClick={() => setHadEffects(hadEffects === v ? null : v)}
-                          className={`rounded-lg py-2 ${hadEffects === v ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                          className={`rounded-2xl py-2 ${hadEffects === v ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                     {v ? "Да" : "Нет"}
                   </button>
                 ))}
@@ -154,7 +154,7 @@ export default function DiaryPage() {
                   ))}
                   {effects.includes("other") && (
                     <textarea value={otherText} onChange={(e) => setOtherText(e.target.value)} maxLength={500} rows={2}
-                              placeholder="Что именно беспокоит" className="rounded-lg border border-gray-300 p-2" />
+                              placeholder="Что именно беспокоит" className="rounded-2xl border border-line p-2" />
                   )}
                 </div>
               )}

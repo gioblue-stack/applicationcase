@@ -1,50 +1,565 @@
 @import "tailwindcss";
 
-/* Палитра снята с маскота: синий пингвин, кремовое брюшко, оранжевый клюв.
-   Только светлая тема. Красный остаётся только у кнопок помощи. */
+/* Тёплый минимализм: белые карточки на едва тонированном фоне, цвета — от выбранного пингвина.
+   Тема — атрибут data-theme на <html> (и на карточках выбора темы); режим — data-mode (light | dark | system).
+   Красный у кнопки помощи и экранов помощи от темы не зависит. */
 @theme {
-  --color-brand-50: #eef4fd;
-  --color-brand-100: #dce8fb;
-  --color-brand-200: #b9d0f5;
-  --color-brand-300: #7fa9ee;
-  --color-brand-500: #5b8fe0;
-  --color-brand-600: #3b6fc4;
-  --color-brand-700: #2b58a5;
-  --color-brand-800: #1b3a73;
-  --color-brand-900: #142b57;
-  --color-cream-100: #fdf6e6;
-  --color-cream-300: #f8e7be;
-  --color-beak: #f7a530;
+  --color-brand-50: #EEF4FB;
+  --color-brand-100: #E3EEF8;
+  --color-brand-200: #C5DAEE;
+  --color-brand-300: #93B8DD;
+  --color-brand-500: #4A84BD;
+  --color-brand-600: #2F6FA8;
+  --color-brand-700: #25598A;
+  --color-brand-800: #1E4A75;
+  --color-brand-900: #16365A;
+  --color-canvas: #F5F8FC;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --color-help: #C62828;
+  --color-help-dark: #9F1F1F;
   --font-sans: var(--font-nunito), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* Крупнее стандартных: основной текст 17 px, подписи 15 px. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.625rem;
+  --radius-card: 1.5rem;
+  --shadow-soft: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -12px color-mix(in srgb, var(--color-brand-900) 18%, transparent);
+}
+
+[data-theme="blue"],
+:root {
+  --color-brand-50: #EEF4FB;
+  --color-brand-100: #E3EEF8;
+  --color-brand-200: #C5DAEE;
+  --color-brand-300: #93B8DD;
+  --color-brand-500: #4A84BD;
+  --color-brand-600: #2F6FA8;
+  --color-brand-700: #25598A;
+  --color-brand-800: #1E4A75;
+  --color-brand-900: #16365A;
+  --color-canvas: #F5F8FC;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --p-body: #3B6FC4;
+  --p-dark: #2B58A5;
+  --p-light: #7FA9EE;
+  --p-mid: #5B8FE0;
+  --p-ink: #1B3A73;
+}
+
+[data-theme="pink"] {
+  --color-brand-50: #FDF2F6;
+  --color-brand-100: #FCE7EE;
+  --color-brand-200: #F6C9D8;
+  --color-brand-300: #EBA0BA;
+  --color-brand-500: #CC5F86;
+  --color-brand-600: #B8466E;
+  --color-brand-700: #9A355A;
+  --color-brand-800: #7E2648;
+  --color-brand-900: #5E1B36;
+  --color-canvas: #FDF7F9;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --p-body: #E07FA0;
+  --p-dark: #C25A82;
+  --p-light: #F6B8CD;
+  --p-mid: #EE9AB7;
+  --p-ink: #7E2648;
+}
+
+[data-theme="sage"] {
+  --color-brand-50: #EFF7F2;
+  --color-brand-100: #E2F0E8;
+  --color-brand-200: #C3DFCF;
+  --color-brand-300: #96C4AA;
+  --color-brand-500: #529478;
+  --color-brand-600: #3F7D63;
+  --color-brand-700: #326650;
+  --color-brand-800: #24523F;
+  --color-brand-900: #1A3C2E;
+  --color-canvas: #F5FAF7;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --p-body: #6FA88C;
+  --p-dark: #4F8A6E;
+  --p-light: #A9D3BE;
+  --p-mid: #8CC0A6;
+  --p-ink: #24523F;
+}
+
+[data-theme="lavender"] {
+  --color-brand-50: #F4F2FB;
+  --color-brand-100: #ECE8F7;
+  --color-brand-200: #D6CFEF;
+  --color-brand-300: #B3A7E0;
+  --color-brand-500: #7E6FBC;
+  --color-brand-600: #6B5BA8;
+  --color-brand-700: #57488F;
+  --color-brand-800: #453A7A;
+  --color-brand-900: #33295C;
+  --color-canvas: #F8F7FC;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --p-body: #9283CF;
+  --p-dark: #7363B5;
+  --p-light: #C4BAEC;
+  --p-mid: #AA9DE0;
+  --p-ink: #453A7A;
+}
+
+[data-theme="sand"] {
+  --color-brand-50: #FAF4EC;
+  --color-brand-100: #F4EADD;
+  --color-brand-200: #E7D2B8;
+  --color-brand-300: #D4B28A;
+  --color-brand-500: #AE7E4C;
+  --color-brand-600: #9A6A3A;
+  --color-brand-700: #80562E;
+  --color-brand-800: #64431F;
+  --color-brand-900: #4A3117;
+  --color-canvas: #FCF9F4;
+  --color-surface: #FFFFFF;
+  --color-subtle: #F2F4F7;
+  --color-line: #E3E6EB;
+  --color-ink: #1F2A37;
+  --color-muted: #5B6675;
+  --p-body: #C99A6B;
+  --p-dark: #A97B4E;
+  --p-light: #E8C9A6;
+  --p-mid: #D9B088;
+  --p-ink: #64431F;
+}
+
+/* Тёмная тема: явный выбор в «Профиле» или системная, если выбрано «Как в телефоне». */
+
+:root[data-mode="dark"][data-theme="blue"],
+:root[data-mode="dark"] [data-theme="blue"],
+:root[data-mode="dark"]:not([data-theme]) {
+  --color-brand-50: #222F3E;
+  --color-brand-100: #26374A;
+  --color-brand-200: #2C455F;
+  --color-brand-300: #6F8AA6;
+  --color-brand-500: #6E9DCA;
+  --color-brand-600: #2F6FA8;
+  --color-brand-700: #AECAE6;
+  --color-brand-800: #D9E7F4;
+  --color-brand-900: #F2F7FC;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+
+:root[data-mode="dark"][data-theme="pink"],
+:root[data-mode="dark"] [data-theme="pink"] {
+  --color-brand-50: #362935;
+  --color-brand-100: #452E3D;
+  --color-brand-200: #5E374A;
+  --color-brand-300: #AC798E;
+  --color-brand-500: #D67F9E;
+  --color-brand-600: #B8466E;
+  --color-brand-700: #F0B8CB;
+  --color-brand-800: #F9DCE6;
+  --color-brand-900: #FEF4F7;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+
+:root[data-mode="dark"][data-theme="sage"],
+:root[data-mode="dark"] [data-theme="sage"] {
+  --color-brand-50: #233233;
+  --color-brand-100: #273B3A;
+  --color-brand-200: #2F4B45;
+  --color-brand-300: #719282;
+  --color-brand-500: #75A993;
+  --color-brand-600: #3F7D63;
+  --color-brand-700: #B0D3BF;
+  --color-brand-800: #D8EAE0;
+  --color-brand-900: #F2F8F5;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+
+:root[data-mode="dark"][data-theme="lavender"],
+:root[data-mode="dark"] [data-theme="lavender"] {
+  --color-brand-50: #2A2C3E;
+  --color-brand-100: #32324A;
+  --color-brand-200: #403D5F;
+  --color-brand-300: #857EA8;
+  --color-brand-500: #988CC9;
+  --color-brand-600: #6B5BA8;
+  --color-brand-700: #C6BDE8;
+  --color-brand-800: #E4E0F5;
+  --color-brand-900: #F6F5FB;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+
+:root[data-mode="dark"][data-theme="sand"],
+:root[data-mode="dark"] [data-theme="sand"] {
+  --color-brand-50: #322E2C;
+  --color-brand-100: #3E362F;
+  --color-brand-200: #524334;
+  --color-brand-300: #9C866C;
+  --color-brand-500: #BE9870;
+  --color-brand-600: #9A6A3A;
+  --color-brand-700: #DFC5A7;
+  --color-brand-800: #EFE2D1;
+  --color-brand-900: #FAF6F0;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+
+@media (prefers-color-scheme: dark) {
+:root:not([data-mode="light"])[data-theme="blue"],
+:root:not([data-mode="light"]) [data-theme="blue"],
+:root:not([data-mode="light"]):not([data-theme]) {
+  --color-brand-50: #222F3E;
+  --color-brand-100: #26374A;
+  --color-brand-200: #2C455F;
+  --color-brand-300: #6F8AA6;
+  --color-brand-500: #6E9DCA;
+  --color-brand-600: #2F6FA8;
+  --color-brand-700: #AECAE6;
+  --color-brand-800: #D9E7F4;
+  --color-brand-900: #F2F7FC;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+:root:not([data-mode="light"])[data-theme="pink"],
+:root:not([data-mode="light"]) [data-theme="pink"] {
+  --color-brand-50: #362935;
+  --color-brand-100: #452E3D;
+  --color-brand-200: #5E374A;
+  --color-brand-300: #AC798E;
+  --color-brand-500: #D67F9E;
+  --color-brand-600: #B8466E;
+  --color-brand-700: #F0B8CB;
+  --color-brand-800: #F9DCE6;
+  --color-brand-900: #FEF4F7;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+:root:not([data-mode="light"])[data-theme="sage"],
+:root:not([data-mode="light"]) [data-theme="sage"] {
+  --color-brand-50: #233233;
+  --color-brand-100: #273B3A;
+  --color-brand-200: #2F4B45;
+  --color-brand-300: #719282;
+  --color-brand-500: #75A993;
+  --color-brand-600: #3F7D63;
+  --color-brand-700: #B0D3BF;
+  --color-brand-800: #D8EAE0;
+  --color-brand-900: #F2F8F5;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+:root:not([data-mode="light"])[data-theme="lavender"],
+:root:not([data-mode="light"]) [data-theme="lavender"] {
+  --color-brand-50: #2A2C3E;
+  --color-brand-100: #32324A;
+  --color-brand-200: #403D5F;
+  --color-brand-300: #857EA8;
+  --color-brand-500: #988CC9;
+  --color-brand-600: #6B5BA8;
+  --color-brand-700: #C6BDE8;
+  --color-brand-800: #E4E0F5;
+  --color-brand-900: #F6F5FB;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+:root:not([data-mode="light"])[data-theme="sand"],
+:root:not([data-mode="light"]) [data-theme="sand"] {
+  --color-brand-50: #322E2C;
+  --color-brand-100: #3E362F;
+  --color-brand-200: #524334;
+  --color-brand-300: #9C866C;
+  --color-brand-500: #BE9870;
+  --color-brand-600: #9A6A3A;
+  --color-brand-700: #DFC5A7;
+  --color-brand-800: #EFE2D1;
+  --color-brand-900: #FAF6F0;
+  --color-canvas: #12161B;
+  --color-surface: #1A1F26;
+  --color-subtle: #242A33;
+  --color-line: #323A45;
+  --color-ink: #E8ECF1;
+  --color-muted: #A7B0BC;
+  --color-amber-50: #33290F;
+  --color-amber-200: #5E4A18;
+  --color-amber-300: #7A611F;
+  --color-amber-800: #F5D58C;
+  --color-amber-900: #F7DDA0;
+  --color-amber-950: #FAE6B8;
+  --color-red-50: #3A1C1F;
+  --color-red-200: #6E2C31;
+  --color-red-700: #F4A6A6;
+  --color-red-800: #F7B8B8;
+}
+}
+
+/* Детали пингвина по теме: у каждого своя, хохолок прячется там, где его заменяет деталь. */
+[data-theme="blue"],
+:root {
+  --acc-blue: inline;
+  --acc-pink: none;
+  --acc-sage: none;
+  --acc-lavender: none;
+  --acc-sand: none;
+  --tuft: inline;
+}
+[data-theme="pink"] {
+  --acc-blue: none;
+  --acc-pink: inline;
+  --acc-sage: none;
+  --acc-lavender: none;
+  --acc-sand: none;
+  --tuft: none;
+}
+[data-theme="sage"] {
+  --acc-blue: none;
+  --acc-pink: none;
+  --acc-sage: inline;
+  --acc-lavender: none;
+  --acc-sand: none;
+  --tuft: none;
+}
+[data-theme="lavender"] {
+  --acc-blue: none;
+  --acc-pink: none;
+  --acc-sage: none;
+  --acc-lavender: inline;
+  --acc-sand: none;
+  --tuft: inline;
+}
+[data-theme="sand"] {
+  --acc-blue: none;
+  --acc-pink: none;
+  --acc-sage: none;
+  --acc-lavender: none;
+  --acc-sand: inline;
+  --tuft: inline;
+}
+.p-tuft { display: var(--tuft, inline); }
+.p-acc-blue { display: var(--acc-blue, none); }
+.p-acc-pink { display: var(--acc-pink, none); }
+.p-acc-sage { display: var(--acc-sage, none); }
+.p-acc-lavender { display: var(--acc-lavender, none); }
+.p-acc-sand { display: var(--acc-sand, none); }
+
+/* Статус «готово» — зелёный, от темы не зависит; в тёмном режиме — тёмная подложка. */
+:root[data-mode="dark"] {
+  --color-emerald-50: #16301F;
+  --color-emerald-800: #A3E0B8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    --color-emerald-50: #16301F;
+    --color-emerald-800: #A3E0B8;
+  }
 }
 
 html,
 body {
-  background: #faf7f0;
-  color: #142b57;
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 body {
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
   -webkit-tap-highlight-color: transparent;
 }
 
-/* «Объёмные» кнопки как в Duolingo: подложка снизу, при нажатии кнопка проседает. */
+:root[data-mode="dark"],
+:root[data-mode="dark"] body {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) {
+    color-scheme: dark;
+  }
+}
+
+/* Видимый фокус с клавиатуры — везде одинаковый, цвета темы. */
+:focus-visible {
+  outline: 3px solid var(--color-brand-300);
+  outline-offset: 2px;
+}
+
 @layer components {
-  .btn-3d {
-    box-shadow: 0 4px 0 var(--color-brand-800);
-    transition: transform 60ms, box-shadow 60ms;
+  /* Главная кнопка: плоская, крупная, мягкая тень в цвет темы; нажатие — лёгкое «вдавливание». */
+  .btn-solid {
+    min-height: 3.25rem;
+    box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--color-brand-600) 70%, transparent);
+    transition: transform 80ms ease-out, background-color 120ms ease-out;
   }
-  .btn-3d:active:not(:disabled) {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 var(--color-brand-800);
+  .btn-solid:hover:not(:disabled) {
+    background-color: var(--color-brand-700);
   }
-  .btn-3d-red {
-    box-shadow: 0 4px 0 #991b1b;
-    transition: transform 60ms, box-shadow 60ms;
+  .btn-solid:active:not(:disabled) {
+    transform: scale(0.98);
   }
-  .btn-3d-red:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #991b1b;
+  .btn-solid-red {
+    min-height: 3.25rem;
+    transition: transform 80ms ease-out, background-color 120ms ease-out;
+  }
+  .btn-solid-red:hover {
+    background-color: var(--color-help-dark);
+  }
+  .btn-solid-red:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-solid,
+  .btn-solid-red {
+    transition: none;
   }
 }
 

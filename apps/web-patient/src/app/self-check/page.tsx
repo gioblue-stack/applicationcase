@@ -29,7 +29,7 @@ function Questions({ instrument, answers, onAnswer }: {
           <div className="grid grid-cols-2 gap-2">
             {instrument.options.map((o) => (
               <button key={o.value} type="button" onClick={() => onAnswer(i, o.value)}
-                      className={`rounded-lg px-2 py-2 text-sm ${answers[i] === o.value ? "bg-brand-600 btn-3d font-semibold text-white" : "bg-gray-100"}`}>
+                      className={`rounded-2xl px-2 py-2 text-sm ${answers[i] === o.value ? "bg-brand-600 btn-solid font-semibold text-white" : "bg-subtle"}`}>
                 {o.label}
               </button>
             ))}
@@ -78,7 +78,7 @@ export default function SelfCheckPage() {
         <Card>
           <p className="text-lg">{result.text}</p>
           {result.actions.filter((a) => ACTION_TEXT[a]).map((a) => <p key={a} className="mt-2">{ACTION_TEXT[a]}</p>)}
-          <p className="mt-3 text-sm text-gray-500">{result.screening_note}</p>
+          <p className="mt-3 text-sm text-muted">{result.screening_note}</p>
         </Card>
         <Link href="/" className="mt-4 block text-center text-brand-700">На главную</Link>
       </Shell>
@@ -96,7 +96,7 @@ export default function SelfCheckPage() {
       <PrimaryButton onClick={submit} disabled={busy || !complete} className="mt-4">
         {complete ? "Узнать результат" : "Ответьте на все вопросы"}
       </PrimaryButton>
-      {PHQ9.copyright && <p className="mt-4 text-xs text-gray-400">{PHQ9.copyright}</p>}
+      {PHQ9.copyright && <p className="mt-4 text-xs text-muted">{PHQ9.copyright}</p>}
     </Shell>
   );
 }

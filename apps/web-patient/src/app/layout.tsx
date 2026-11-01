@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import ServiceWorker from "@/components/ServiceWorker";
+import ThemeSync from "@/components/ThemeSync";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 // Округлый шрифт в духе маскота; кириллица нужна для всего интерфейса.
@@ -20,14 +22,19 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#3b6fc4",
+  themeColor: "#2F6FA8", // меняется под тему и тёмный режим (ThemeSync)
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={nunito.variable}>
+    // data-theme / data-mode ставит скрипт до отрисовки — расхождение с серверной разметкой ожидаемо.
+    <html lang="ru" className={nunito.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body className="font-sans antialiased">
         {children}
+        <ThemeSync />
         <ServiceWorker />
       </body>
     </html>
